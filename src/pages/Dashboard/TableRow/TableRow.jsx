@@ -1,5 +1,6 @@
 import React from "react";
 import { Eye, Edit2, Trash2, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const TableRow = ({ product }) => {
   return (
@@ -37,13 +38,15 @@ const TableRow = ({ product }) => {
       <td className="py-4 px-4 text-sm font-bold text-gray-700">${product.sales}</td>
       <td className="py-4 px-4">
         <div className="flex items-center space-x-2">
-          <button className="p-1.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors">
+          <Link to="/product/details">
+          <button className="p-1.5 cursor-pointer bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors">
             <Eye size={16} />
           </button>
-          <button className="p-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors">
+          </Link>
+          <button className="p-1.5 cursor-pointer bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors">
             <Edit2 size={16} />
           </button>
-          <button className="p-1.5 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors">
+          <button className="p-1.5 cursor-pointer bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors">
             <Trash2 size={16} />
           </button>
         </div>

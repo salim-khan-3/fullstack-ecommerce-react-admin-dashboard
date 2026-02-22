@@ -1,11 +1,14 @@
+
+import "react-inner-image-zoom/lib/styles.min.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./layouts/Header/Navbar";
 import Sidebar from "./layouts/Sidebar/Sidebar";
 import Dashboard from "./pages/Dashboard/Dashboard/Dashboard";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import ProductDetails from "./pages/ProductDetails/ProductDetails";
 
 export const MyContext = createContext();
 
@@ -13,6 +16,14 @@ function App() {
   const [isToggleSidebar, setIsToggleSidebar] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHideSidebarAndNavbar, setIsHideSidebarAndNavbar] = useState(false);
+  const [themeMode, setThemeMode] = useState("light");
+
+  useEffect(() => {
+   document.body.classList.remove("light")
+   document.body.classList.remove("dark")
+   document.body.classList.add(themeMode);
+   localStorage.setItem("themeMode", themeMode);
+  }, [themeMode]);
 
   const values = {
     isToggleSidebar,
@@ -21,6 +32,7 @@ function App() {
     setIsLoggedIn,
     isHideSidebarAndNavbar,
     setIsHideSidebarAndNavbar,
+    
   };
 
   const sidebarWidth = 320;
@@ -74,6 +86,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/product/details" element={<ProductDetails />} />
               </Routes>
             </div>
           </motion.div>
@@ -84,8 +97,6 @@ function App() {
 }
 
 export default App;
-
-
 
 // import { BrowserRouter, Route, Routes } from "react-router-dom";
 // import Navbar from "./layouts/Header/Navbar";

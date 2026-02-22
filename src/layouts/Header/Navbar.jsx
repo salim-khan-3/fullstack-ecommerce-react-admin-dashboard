@@ -12,7 +12,7 @@ import {
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const { isToggleSidebar, setIsToggleSidebar, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { isToggleSidebar, themeMode, setThemeMode,setIsToggleSidebar, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
  
 
