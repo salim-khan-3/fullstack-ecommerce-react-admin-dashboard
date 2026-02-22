@@ -2,11 +2,22 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./layouts/Header/Navbar";
 import Sidebar from "./layouts/Sidebar/Sidebar";
 import Dashboard from "./pages/Dashboard/Dashboard/Dashboard";
-// import Dashboard from "./pages/Dashboard/Dashboard";
+import { createContext, useState } from "react";
+
+
+const MyContext = createContext();
 
 function App() {
+
+  const [isToggleSidebar, setIsToggleSidebar] = useState(false);
+
+    const values = {
+      isToggleSidebar,
+      setIsToggleSidebar
+    };
   return (
     <BrowserRouter>
+    <MyContext.Provider value={values}>
       <Navbar></Navbar>
       <div className="flex ">
         <div className="w-[420px] shrink-0">
@@ -19,6 +30,7 @@ function App() {
           </Routes>
         </div>
       </div>
+      </MyContext.Provider>
     </BrowserRouter>
   );
 }

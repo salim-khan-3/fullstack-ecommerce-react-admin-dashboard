@@ -52,7 +52,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="h-screen bg-white border-r border-gray-200 flex flex-col p-4">
+    <aside className="h-screen sticky top-0 bg-white border-r border-gray-200 flex flex-col p-4">
       
       <div className="flex-1 space-y-1 overflow-y-auto">
         
