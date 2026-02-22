@@ -1,26 +1,26 @@
-import Navbar from "./layouts/Header/Navbar"
-import Sidebar from "./layouts/Sidebar/Sidebar"
-import Dashboard from "./pages/Dashboard/Dashboard"
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Navbar from "./layouts/Header/Navbar";
+import Sidebar from "./layouts/Sidebar/Sidebar";
+import Dashboard from "./pages/Dashboard/Dashboard/Dashboard";
+// import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
-
-
   return (
-    <div>
+    <BrowserRouter>
       <Navbar></Navbar>
-      <main>
-        <div className="grid grid-cols-12 gap-10">
-          <div className="col-span-3">
-            <Sidebar></Sidebar>
-          </div>
-          <div className="col-span-9">
-            <Dashboard></Dashboard>
-          </div>
+      <div className="flex ">
+        <div className="w-[420px] shrink-0">
+          <Sidebar />
         </div>
-      </main>
-    </div>
-  )
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Dashboard></Dashboard>}></Route>
+            <Route path="/dashboard" element={<Dashboard></Dashboard>}></Route>
+          </Routes>
+        </div>
+      </div>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
