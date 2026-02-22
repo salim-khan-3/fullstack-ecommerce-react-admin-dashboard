@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 
 const Navbar = () => {
-  const { isToggleSidebar, setIsToggleSidebar } = useContext(MyContext);
+  const { isToggleSidebar, setIsToggleSidebar, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // false by default
+ 
 
   // Dummy notification data based on your screenshot
   const notifications = [
