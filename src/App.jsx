@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard/Dashboard/Dashboard";
 import { createContext, useState } from "react";
 import { motion } from "framer-motion";
 import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 
 export const MyContext = createContext();
 
@@ -72,6 +73,7 @@ function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
               </Routes>
             </div>
           </motion.div>

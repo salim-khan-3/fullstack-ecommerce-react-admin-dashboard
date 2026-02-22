@@ -9,6 +9,7 @@ import {
   Menu,
   ChevronDown,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { isToggleSidebar, setIsToggleSidebar, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
@@ -166,12 +167,12 @@ const Navbar = () => {
             </div>
           </div>
         ) : (
-          <button
+          <Link to="/login"
             onClick={() => setIsLoggedIn(isLoggedIn)} // dummy login toggle
             className="py-1.5 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
           >
             Sign In
-          </button>
+          </Link>
         )}
       </div>
     </nav>
