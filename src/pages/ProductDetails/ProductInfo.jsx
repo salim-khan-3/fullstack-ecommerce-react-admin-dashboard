@@ -10,15 +10,15 @@ const ProductInfo = () => {
       </div>
 
       <div className="space-y-3 text-sm">
-        <div className="flex items-center gap-10">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
           <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Tag size={16}/> Brand</span>
           <span className="text-gray-500">: &nbsp; V-Mart</span>
         </div>
-        <div className="flex items-center gap-10">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
           <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Grid size={16}/> Category</span>
           <span className="text-gray-500">: &nbsp; Fashion</span>
         </div>
-        <div className="flex items-center gap-10">
+        <div cclassName="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
           <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Maximize size={16}/> SIZE</span>
           <div className="flex gap-2 items-center">
              <span>:</span>
@@ -27,11 +27,11 @@ const ProductInfo = () => {
              ))}
           </div>
         </div>
-        <div className="flex items-center gap-10">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
           <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Star size={16}/> Review</span>
           <span className="text-gray-500">: &nbsp; (4) Review</span>
         </div>
-        <div className="flex items-center gap-10">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
           <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Calendar size={16}/> Published</span>
           <span className="text-gray-500">: &nbsp; 2024-09-17T02:35:38.759Z</span>
         </div>

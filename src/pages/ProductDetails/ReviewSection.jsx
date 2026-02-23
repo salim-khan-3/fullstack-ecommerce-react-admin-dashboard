@@ -31,7 +31,7 @@ export const ReviewSection = () => {
   ];
 
   return (
-    <div className="mt-16 max-w-2xl">
+    <div className="mt-12 md:mt-16 max-w-full md:max-w-2xl">
       <div className="flex items-center justify-between mb-8">
         <h3 className="font-extrabold text-xl text-gray-900">Customer Feedback</h3>
         <span className="text-sm text-blue-600 font-bold underline cursor-pointer">Write a review</span>

@@ -20,7 +20,7 @@ const ProductGallery = () => {
           10% Off
         </span>
 
-        <div className="w-full h-[450px] flex justify-center p-4">
+        <div className="w-full h-[300px] sm:h-[380px] md:h-[450px] flex justify-center p-4">
           <InnerImageZoom
             src={mainImg}
             zoomSrc={mainImg}

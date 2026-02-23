@@ -31,7 +31,7 @@ const StatCard = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-gray-50 overflow-hidden">
+    <div className="p-0 lg:p-6 bg-gray-50 overflow-hidden">
       {/* Scroll Container */}
       <div 
         ref={scrollRef}

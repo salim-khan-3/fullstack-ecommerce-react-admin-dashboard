@@ -28,7 +28,7 @@ const Register = () => {
       <div className="w-full flex flex-col lg:flex-row bg-[#F8FAFC] transition-colors duration-500">
     
         {/* Right Side: Registration Form */}
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+        <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-[480px]">
             <div className="bg-white dark:bg-[#1F2937] p-8 sm:p-10 rounded-[2.5rem] shadow-2xl dark:shadow-none border border-gray-100 dark:border-gray-700 relative">
         
