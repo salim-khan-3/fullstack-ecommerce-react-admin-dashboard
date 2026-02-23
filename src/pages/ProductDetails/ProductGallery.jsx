@@ -1,46 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import InnerImageZoom from "react-inner-image-zoom";
+// আপনার node_modules পাথ অনুযায়ী CSS ইমপোর্ট করুন
+import "react-inner-image-zoom/lib/styles.min.css"; 
 
 const ProductGallery = () => {
   const images = [
-    "https://i.ibb.co/v4m0YvL/suit.png",
-    "https://i.ibb.co/v4m0YvL/suit.png",
-    "https://i.ibb.co/v4m0YvL/suit.png",
+    // "https://cdn.pixabay.com/photo/2018/10/23/08/18/sexy-girl-3767278_1280.jpg",
+    // "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9V7UVVW0rFg4yBpDqYabbPrZE4JVN1CBh0ihCcenIxA&s", // এখানে আপনার অন্য ইমেজের লিঙ্ক দিন
+    // "https://cdn.create.vista.com/api/media/small/151878952/stock-photo-beautiful-girl-in-blue-underwear",
   ];
 
-  return (
-    <div className="space-y-4">
-      <h2 className="text-gray-500 font-semibold mb-2">Product Gallery</h2>
+  const [mainImg, setMainImg] = useState(images[0]);
 
-      {/* Main Image with Zoom */}
-      <div className="relative border rounded-lg p-2 bg-white flex justify-center">
-        <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
-          10%
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Main Image Container */}
+      <div className="group relative border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm transition-all hover:shadow-md">
+        <span className="absolute top-4 left-4 bg-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full z-10 shadow-lg uppercase tracking-wider">
+          10% Off
         </span>
 
-        <div className="w-full max-w-md">
+        <div className="w-full h-[450px] flex justify-center p-4">
           <InnerImageZoom
-            src={images[0]}
-            zoomSrc={images[0]}
+            src={mainImg}
+            zoomSrc={mainImg}
             zoomType="hover"
-            zoomScale={1.5}
+            zoomScale={1.2}
+            className="rounded-xl"
           />
         </div>
       </div>
 
       {/* Thumbnails */}
-      <div className="flex gap-2">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
         {images.map((img, idx) => (
-          <div
+          <button
             key={idx}
-            className="w-20 h-20 border rounded-md p-1 cursor-pointer hover:border-blue-500"
+            onClick={() => setMainImg(img)}
+            className={`relative flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-300 overflow-hidden 
+              ${mainImg === img ? "border-blue-600 ring-2 ring-blue-50" : "border-gray-100 hover:border-gray-300"}`}
           >
-            <img
-              src={img}
-              alt="Thumb"
-              className="w-full h-full object-cover"
-            />
-          </div>
+            <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+          </button>
         ))}
       </div>
     </div>

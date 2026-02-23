@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
+import ProductUpload from "./pages/ProductUpload/ProductUpload";
 
 export const MyContext = createContext();
 
@@ -87,6 +88,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/product/details" element={<ProductDetails />} />
+                <Route path="/product/upload" element={<ProductUpload />} />
               </Routes>
             </div>
           </motion.div>

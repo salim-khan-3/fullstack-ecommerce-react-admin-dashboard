@@ -5,9 +5,9 @@ import ReviewSection from './ReviewSection';
 
 const ProductDetails = () => {
   return (
-    <div className="bg-gray-100 min-h-screen p-4 md:p-8">
+    <div className="bg-gray-100 p-4 md:p-8">
       {/* Top Bar / Breadcrumb */}
-      <div className="max-w-6xl mx-auto bg-white p-4 rounded-lg shadow-sm flex justify-between items-center mb-6">
+      <div className="w-full mx-auto bg-white p-4 rounded-lg shadow-sm flex justify-between items-center mb-6">
         <h2 className="text-lg font-bold text-gray-700">Product View</h2>
         <div className="text-xs text-gray-400 flex items-center gap-2">
            <span className="bg-gray-100 px-2 py-1 rounded">🏠 Dashboard</span> / <span>Products</span> / <span>Product View</span>
@@ -15,7 +15,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Main Content Card */}
-      <div className="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-lg shadow-sm border border-gray-100">
+      <div className="w-full mx-auto bg-white p-6 md:p-10 rounded-lg shadow-sm border border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <ProductGallery />
           <ProductInfo />
