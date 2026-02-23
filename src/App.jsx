@@ -1,4 +1,3 @@
-
 import "react-inner-image-zoom/lib/styles.min.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./layouts/Header/Navbar";
@@ -18,13 +17,16 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHideSidebarAndNavbar, setIsHideSidebarAndNavbar] = useState(false);
   const [themeMode, setThemeMode] = useState("light");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   useEffect(() => {
-   document.body.classList.remove("light")
-   document.body.classList.remove("dark")
-   document.body.classList.add(themeMode);
-   localStorage.setItem("themeMode", themeMode);
-  }, [themeMode]);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const values = {
     isToggleSidebar,
@@ -33,7 +35,7 @@ function App() {
     setIsLoggedIn,
     isHideSidebarAndNavbar,
     setIsHideSidebarAndNavbar,
-    
+    isMobile,
   };
 
   const sidebarWidth = 320;
@@ -48,32 +50,49 @@ function App() {
           className={`flex w-full h-[calc(100vh-${!isHideSidebarAndNavbar ? "64px" : "0px"})] overflow-hidden bg-gray-50 transition-all duration-300`}
         >
           {/* Only show Sidebar if not hidden */}
+          {/* Sidebar */}
           {!isHideSidebarAndNavbar && (
-            <motion.div
-              initial={false}
-              animate={{
-                width: isToggleSidebar ? sidebarWidth : 0,
-                minWidth: isToggleSidebar ? sidebarWidth : 0,
-                opacity: isToggleSidebar ? 1 : 0,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-                duration: 0.4,
-              }}
-              className="h-full overflow-hidden border-r border-gray-100 bg-white"
-            >
-              <div style={{ width: sidebarWidth }}>
+            <>
+              {/* Overlay (only mobile) */}
+              {isMobile && isToggleSidebar && (
+                <div
+                  className="fixed inset-0 bg-black/40 z-40"
+                  onClick={() => setIsToggleSidebar(false)}
+                />
+              )}
+
+              <motion.div
+                initial={false}
+                animate={{
+                  x: isMobile ? (isToggleSidebar ? 0 : -sidebarWidth) : 0,
+                  width: !isMobile
+                    ? isToggleSidebar
+                      ? sidebarWidth
+                      : 0
+                    : sidebarWidth,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
+                className={`
+        ${isMobile ? "fixed z-50 h-full" : "relative"}
+        bg-white border-r border-gray-100 overflow-hidden
+      `}
+                style={{ width: sidebarWidth }}
+              >
                 <Sidebar />
-              </div>
-            </motion.div>
+              </motion.div>
+            </>
           )}
 
           {/* Main Content */}
           <motion.div
             layout
-            className="flex-1 h-full overflow-y-auto"
+            className={`flex-1 h-full overflow-y-auto transition-all duration-300 ${
+              !isMobile && isToggleSidebar ? "ml-0" : ""
+            }`}
             transition={{
               type: "spring",
               stiffness: 300,

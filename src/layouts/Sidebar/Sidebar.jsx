@@ -19,7 +19,7 @@ const Sidebar = () => {
     {
       icon: <LayoutDashboard size={20} />,
       label: "Dashboard",
-      active: true,
+       hasArrow: true,
       submenu: ["Analytics", "Statistics"],
     },
     {

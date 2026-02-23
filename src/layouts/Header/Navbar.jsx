@@ -92,12 +92,12 @@ const Navbar = () => {
           <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
             <Sun size={20} />
           </button>
-          <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+          {/* <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
             <ShoppingCart size={20} />
           </button>
           <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
             <Mail size={20} />
-          </button>
+          </button> */}
 
           {/* Notification Button & Dropdown */}
           <div className="relative">
