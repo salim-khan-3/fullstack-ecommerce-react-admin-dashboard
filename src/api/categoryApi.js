@@ -1,15 +1,32 @@
 import axiosInstance from './axiosInstance';
 
 
-export const getAllCategories = async () => {
+export const getAllCategories = async (page = 1) => {
   try {
-    const response = await axiosInstance.get('/category');
+ 
+    const response = await axiosInstance.get(`/category?page=${page}`);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Network Error");
   }
 };
-
+// export const getAllCategories = async () => {
+//   try {
+//     const response = await axiosInstance.get('/category');
+//     return response.data;
+//   } catch (error) {
+//     throw error.response ? error.response.data : new Error("Network Error");
+//   }
+// };
+export const getCategoryById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/category/${id}`);
+    // আপনার ব্যাকএন্ড যেহেতু { success: true, data: category } পাঠাচ্ছে
+    return response.data; 
+  } catch (error) {
+    throw error.response ? error.response.data : new Error("Network Error");
+  }
+};
 
 export const updateCategory = async (id, categoryData) => {
   try {

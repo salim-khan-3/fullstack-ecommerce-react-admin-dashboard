@@ -11,7 +11,7 @@ import {
   LayoutGrid,
   Sparkles,
 } from "lucide-react";
-import { getAllCategories, updateCategory } from "../../../api/categoryApi";
+import {  getCategoryById, updateCategory } from "../../../api/categoryApi";
 import toast from "react-hot-toast";
 
 const EditCategory = () => {
@@ -26,30 +26,43 @@ const EditCategory = () => {
     color: "",
   });
 
-  // ✅ ID দিয়ে category data load করা
-  useEffect(() => {
-    const loadCategory = async () => {
-      try {
-        setLoading(true);
-        const data = await getAllCategories();
-        const categories = Array.isArray(data) ? data : data.categories || [];
-        const found = categories.find((c) => c._id === id);
-        if (found) {
-          setFormData({
-            name: found.name || "",
-            imageUrl: Array.isArray(found.images) ? found.images[0] : found.image || "",
-            color: found.color || "",
-          });
-        }
-      } catch (err) {
-        toast.error("Failed to load category!");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCategory();
-  }, [id]);
+// EditCategory.jsx এর ভেতর নিচের মতো পরিবর্তন করুন
 
+useEffect(() => {
+  const loadCategory = async () => {
+    try {
+      setLoading(true);
+      
+      // সরাসরি আইডি দিয়ে সিঙ্গেল ক্যাটাগরি ডেটা ফেচ করা হচ্ছে
+      const response = await getCategoryById(id);
+      
+      // আপনার ব্যাকএন্ড অনুযায়ী ডেটা response.data এর ভেতর আছে
+      const categoryData = response.data;
+
+      if (categoryData) {
+        setFormData({
+          name: categoryData.name || "",
+          // যদি ইমেজেস অ্যারে হয় তবে প্রথমটা নেবে, নাহলে image স্ট্রিং নেবে
+          imageUrl: Array.isArray(categoryData.images) 
+            ? categoryData.images[0] 
+            : (categoryData.image || ""),
+          color: categoryData.color || "",
+        });
+      }
+    } catch (err) {
+      console.error("Load Category Error:", err);
+     toast.error("Failed to load category data! Please select a valid category.");
+      // ডেটা না পেলে লিস্টে ফেরত পাঠানো ভালো
+      navigate("/category/list");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (id) {
+    loadCategory();
+  }
+}, [id, navigate]);
   const handleColorChange = (value) => {
     const formatted = value.startsWith("#") ? value : `#${value}`;
     setFormData({ ...formData, color: formatted });

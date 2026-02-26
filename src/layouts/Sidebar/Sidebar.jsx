@@ -37,8 +37,6 @@ const Sidebar = () => {
       label: "Categoey",
       hasArrow: true,
       submenu: [
-        // { label: "Product List", path: "/dashboard" },
-        // { label: "Product View", path: "/product/details" },
         { label: "Category List", path: "/category/list" },
         { label: "Add Category", path: "/category/add" },
         { label: "Edit Category", path: "/dashboard/categories/edit/:id" },
