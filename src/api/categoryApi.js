@@ -30,3 +30,8 @@ export const createCategory = async (categoryData) => {
   }
 };
 
+
+export const deleteCategory = async (id) => {
+  const response = await axiosInstance.delete(`/category/${id}`);
+  return response.data;
+};

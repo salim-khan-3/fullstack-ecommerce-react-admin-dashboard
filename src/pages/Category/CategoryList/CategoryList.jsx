@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// ✅ SweetAlert2 ইম্পোর্ট করো
+import Swal from "sweetalert2"; 
 import {
   Home,
   Pencil,
@@ -12,13 +14,12 @@ import {
   Loader2,
   Link,
 } from "lucide-react";
-import { getAllCategories } from "../../../api/categoryApi";
+import { getAllCategories, deleteCategory } from "../../../api/categoryApi";
 
 const ITEMS_PER_PAGE = 8;
 
 export default function CategoryList() {
   const navigate = useNavigate();
-
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,11 +40,49 @@ export default function CategoryList() {
 
   useEffect(() => { fetchCategories(); }, []);
 
-  // ✅ Edit button click → EditCategory page এ navigate
+  // ✅ SweetAlert2 দিয়ে ডিলিট ফাংশন
+  const handleDelete = async (categoryId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#2979ff",
+      cancelButtonColor: "#ff5252",
+      confirmButtonText: "Yes, delete it!",
+      padding: '2em',
+      customClass: {
+        confirmButton: 'rounded-lg px-4 py-2',
+        cancelButton: 'rounded-lg px-4 py-2'
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteCategory(categoryId);
+          
+          // ✅ ডিলিট সফল হওয়ার পর সাকসেস মেসেজ
+          Swal.fire({
+            title: "Deleted!",
+            text: "Category has been deleted.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          fetchCategories(); // লিস্ট রিফ্রেশ
+        } catch (err) {
+          Swal.fire("Error!", err.message || "Failed to delete category.", "error");
+        }
+      }
+    });
+  };
+
   const handleEditClick = (categoryId) => {
     navigate(`/dashboard/categories/edit/${categoryId}`);
   };
 
+  // ... বাকি লজিক (Pagination, table rendering) অপরিবর্তিত থাকবে ...
+  
   const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentData = categories.slice(start, start + ITEMS_PER_PAGE);
@@ -160,10 +199,7 @@ export default function CategoryList() {
                       key={row._id}
                       className="border-t border-gray-100 transition-colors duration-100"
                       style={{ backgroundColor: idx % 2 === 0 ? "#ffffff" : "#fbfcfe" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f0f7ff")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = idx % 2 === 0 ? "#ffffff" : "#fbfcfe")}
                     >
-                      {/* Checkbox */}
                       <td className="px-4 py-4 text-center">
                         <input
                           type="checkbox"
@@ -172,13 +208,7 @@ export default function CategoryList() {
                           onChange={() => toggleSelect(row._id)}
                         />
                       </td>
-
-                      {/* UID */}
-                      <td className="px-3 py-4 text-sm text-gray-500 font-medium">
-                        #{start + idx + 1}
-                      </td>
-
-                      {/* IMAGE */}
+                      <td className="px-3 py-4 text-sm text-gray-500 font-medium">#{start + idx + 1}</td>
                       <td className="px-3 py-3">
                         <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
                           <img
@@ -189,13 +219,9 @@ export default function CategoryList() {
                           />
                         </div>
                       </td>
-
-                      {/* CATEGORY NAME */}
                       <td className="px-3 py-4">
                         <span className="text-sm font-semibold text-gray-700 truncate block">{row.name}</span>
                       </td>
-
-                      {/* IMAGE URL */}
                       <td className="px-3 py-4">
                         {imageUrl ? (
                           <div className="flex items-center gap-1.5">
@@ -205,7 +231,6 @@ export default function CategoryList() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-blue-500 hover:text-blue-700 hover:underline font-mono truncate block max-w-[200px] transition-colors"
-                              title={imageUrl}
                             >
                               {imageUrl}
                             </a>
@@ -214,29 +239,27 @@ export default function CategoryList() {
                           <span className="text-xs text-gray-300 italic">No URL</span>
                         )}
                       </td>
-
-                      {/* COLOR */}
                       <td className="px-3 py-4">
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: row.color || "#ccc" }} />
                           <span className="text-xs text-gray-600 font-mono uppercase">{row.color || "—"}</span>
                         </div>
                       </td>
-
-                      {/* ACTION */}
                       <td className="px-3 py-4">
                         <div className="flex items-center justify-center gap-1.5">
                           <button className="w-8 h-8 rounded-lg flex items-center justify-center bg-pink-50 text-pink-500 hover:bg-pink-100 transition-colors">
                             <Eye size={14} />
                           </button>
-                          {/* ✅ Edit → নতুন page এ navigate */}
                           <button
                             onClick={() => handleEditClick(row._id)}
                             className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
                           >
                             <Pencil size={14} />
                           </button>
-                          <button className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                          <button 
+                            onClick={() => handleDelete(row._id)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                          >
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -249,7 +272,7 @@ export default function CategoryList() {
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination Section */}
         <div className="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4 bg-white">
           <p className="text-sm text-gray-500">
             Showing <span className="font-bold text-gray-800">{currentData.length}</span> of{" "}
@@ -264,20 +287,12 @@ export default function CategoryList() {
               className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-30 transition-colors">
               <ChevronLeft size={15} />
             </button>
-            {getPageNumbers().map((page, i) =>
-              page === "..." ? (
-                <span key={`e-${i}`} className="px-1 text-gray-400 text-sm">...</span>
-              ) : (
-                <button key={page} onClick={() => setCurrentPage(page)}
-                  className="w-9 h-9 rounded-lg text-sm font-semibold transition-all"
-                  style={{
-                    backgroundColor: currentPage === page ? "#2979ff" : "transparent",
-                    color: currentPage === page ? "#fff" : "#6b7280",
-                  }}>
+            {getPageNumbers().map((page, i) => (
+               <button key={i} onClick={() => typeof page === 'number' && setCurrentPage(page)}
+                  className={`w-9 h-9 rounded-lg text-sm font-semibold transition-all ${currentPage === page ? "bg-blue-600 text-white" : "text-gray-500 hover:bg-gray-50"}`}>
                   {page}
-                </button>
-              )
-            )}
+               </button>
+            ))}
             <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
               className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 disabled:opacity-30 transition-colors">
               <ChevronR size={15} />
@@ -292,11 +307,6 @@ export default function CategoryList() {
     </div>
   );
 }
-
-
-
-
-
 
 
 
