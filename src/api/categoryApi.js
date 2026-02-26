@@ -13,7 +13,7 @@ export const getAllCategories = async () => {
 
 export const updateCategory = async (id, categoryData) => {
   try {
-    const response = await axiosInstance.put(`/category/update/${id}`, categoryData);
+    const response = await axiosInstance.put(`/category/${id}`, categoryData);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Network Error");
