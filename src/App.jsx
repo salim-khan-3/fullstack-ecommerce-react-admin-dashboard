@@ -12,6 +12,7 @@ import ProductUpload from "./pages/ProductUpload/ProductUpload";
 import CategoryForm from "./pages/Category/AddCategory/AddCategory";
 import { Toaster } from "react-hot-toast";
 import CategoryList from "./pages/Category/CategoryList/CategoryList";
+import EditCategory from "./pages/Category/Editcategory/Editcategory";
 
 export const MyContext = createContext();
 
@@ -114,6 +115,7 @@ function App() {
                 <Route path="/product/upload" element={<ProductUpload />} />
                 <Route path="/category/add" element={<CategoryForm />} />
                 <Route path="/category/list" element={<CategoryList />} />
+                <Route path="/dashboard/categories/edit/:id" element={<EditCategory />} />
               </Routes>
             </div>
           </motion.div>
@@ -124,86 +126,3 @@ function App() {
 }
 
 export default App;
-
-// import { BrowserRouter, Route, Routes } from "react-router-dom";
-// import Navbar from "./layouts/Header/Navbar";
-// import Sidebar from "./layouts/Sidebar/Sidebar";
-// import Dashboard from "./pages/Dashboard/Dashboard/Dashboard";
-// import { createContext, useState } from "react";
-// import { motion } from "framer-motion";
-// import Login from "./pages/Login/Login";
-
-// export const MyContext = createContext();
-
-// function App() {
-//   const [isToggleSidebar, setIsToggleSidebar] = useState(true);
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-//   const [isHideSidebarAndNavbar, setIsHideSidebarAndNavbar] = useState(false);
-
-//   const values = {
-//     isToggleSidebar,
-//     setIsToggleSidebar,
-//     isLoggedIn,
-//     setIsLoggedIn,
-//     isHideSidebarAndNavbar,
-//     setIsHideSidebarAndNavbar,
-//   };
-
-//   // Sidebar width configuration
-//   const sidebarWidth = 320;
-
-//   return (
-//     <BrowserRouter>
-//       <MyContext.Provider value={values}>
-//         <Navbar />
-
-//         {/* Layout Wrapper */}
-//         <div className="flex w-full h-[calc(100vh-64px)] overflow-hidden bg-gray-50">
-//           {/* Sidebar Section */}
-//           <motion.div
-//             initial={false}
-//             animate={{
-//               width: isToggleSidebar ? sidebarWidth : 0,
-//               minWidth: isToggleSidebar ? sidebarWidth : 0,
-//               opacity: isToggleSidebar ? 1 : 0,
-//             }}
-//             transition={{
-//               type: "spring",
-//               stiffness: 300,
-//               damping: 30,
-//               duration: 0.4,
-//             }}
-//             className="h-full overflow-hidden border-r border-gray-100 bg-white"
-//           >
-//             {/* Sidebar content container to prevent text wrapping during transition */}
-//             <div style={{ width: sidebarWidth }}>
-//               <Sidebar />
-//             </div>
-//           </motion.div>
-
-//           {/* Main Content Section */}
-//           <motion.div
-//             layout
-//             className="flex-1 h-full overflow-y-auto"
-//             transition={{
-//               type: "spring",
-//               stiffness: 300,
-//               damping: 30,
-//               duration: 0.4,
-//             }}
-//           >
-//             <div className="p-6">
-//               <Routes>
-//                 <Route path="/" element={<Dashboard />} />
-//                 <Route path="/dashboard" element={<Dashboard />} />
-//                 <Route path="/login" element={<Login />} />
-//               </Routes>
-//             </div>
-//           </motion.div>
-//         </div>
-//       </MyContext.Provider>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
