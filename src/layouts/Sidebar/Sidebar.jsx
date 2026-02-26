@@ -39,7 +39,9 @@ const Sidebar = () => {
       submenu: [
         // { label: "Product List", path: "/dashboard" },
         // { label: "Product View", path: "/product/details" },
-        { label: "Category Upload", path: "/category/add" },
+        { label: "Category List", path: "/category/list" },
+        { label: "Add Category", path: "/category/add" },
+        { label: "Edit Category", path: "/dashboard/categories/edit/:id" },
       ],
     },
     {

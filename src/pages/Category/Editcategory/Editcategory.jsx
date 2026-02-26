@@ -66,7 +66,7 @@ const EditCategory = () => {
       });
       toast.success("Category updated successfully!");
       // ✅ সফল হলে Category List page এ ফিরে যাওয়া
-      setTimeout(() => navigate("/dashboard/categories"), 1000);
+      setTimeout(() => navigate("/category/list"), 1000);
     } catch (err) {
       toast.error(err.message || "Update failed!");
     } finally {
@@ -231,7 +231,7 @@ const EditCategory = () => {
                   </button>
                 </div>
               </form>
-              
+
             </div>
           </div>
         </div>
