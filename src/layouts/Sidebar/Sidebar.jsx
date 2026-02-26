@@ -33,6 +33,16 @@ const Sidebar = () => {
       ],
     },
     {
+      icon: <ShoppingBag size={20} />,
+      label: "Categoey",
+      hasArrow: true,
+      submenu: [
+        // { label: "Product List", path: "/dashboard" },
+        // { label: "Product View", path: "/product/details" },
+        { label: "Category Upload", path: "/category/add" },
+      ],
+    },
+    {
       icon: <ShoppingCart size={20} />,
       label: "Orders",
       hasArrow: true,

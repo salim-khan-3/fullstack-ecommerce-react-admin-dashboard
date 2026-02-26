@@ -9,6 +9,9 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
 import ProductUpload from "./pages/ProductUpload/ProductUpload";
+import CategoryForm from "./pages/Category/AddCategory/AddCategory";
+import { Toaster } from "react-hot-toast";
+import CategoryList from "./pages/Category/CategoryList/CategoryList";
 
 export const MyContext = createContext();
 
@@ -43,6 +46,7 @@ function App() {
   return (
     <BrowserRouter>
       <MyContext.Provider value={values}>
+         <Toaster position="top-right" />
         {/* Only show Navbar if not hidden */}
         {!isHideSidebarAndNavbar && <Navbar />}
 
@@ -108,6 +112,8 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/product/details" element={<ProductDetails />} />
                 <Route path="/product/upload" element={<ProductUpload />} />
+                <Route path="/category/add" element={<CategoryForm />} />
+                <Route path="/category/list" element={<CategoryList />} />
               </Routes>
             </div>
           </motion.div>
