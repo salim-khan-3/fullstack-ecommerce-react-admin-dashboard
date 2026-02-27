@@ -9,6 +9,7 @@ import { Home, Loader2 } from "lucide-react";
 import { getAllCategories, deleteCategory } from "../../../api/categoryApi";
 import Pagination from "../../../components/CategoryComponent/Pagination/Pagination";
 import CategoryTableRow from "../../../components/CategoryComponent/CategoryTableRow/CategoryTableRow";
+import Loader from "../../../components/Loader/Loader";
 
 export default function CategoryList() {
   const navigate = useNavigate();
@@ -43,7 +44,6 @@ export default function CategoryList() {
     fetchCategories(currentPage);
   }, [currentPage, fetchCategories]);
 
-  // ৪. পেজ পরিবর্তন হলে URL আপডেট করার ফাংশন
   const handlePageChange = (newPage) => {
     setSearchParams({ page: newPage });
   };
@@ -91,9 +91,7 @@ export default function CategoryList() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <Loader2 size={40} className="animate-spin text-blue-500" />
-      </div>
+      <Loader></Loader>
     );
   }
 
