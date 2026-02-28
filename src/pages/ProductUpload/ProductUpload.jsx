@@ -1,19 +1,50 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Upload, CloudLightning, Star } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Upload, CloudLightning, Star } from "lucide-react";
+import { getAllCategories } from "../../api/categoryApi";
 
 const ProductUpload = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  // ProductUpload.jsx এর ভেতরে useEffect অংশ
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // আমরা প্রথম পেজের ১০০টি ডাটা চাচ্ছি (যা তোমার সব ক্যাটাগরি কভার করবে)
+      const res = await getAllCategories(1, 100); 
+      
+      if (res?.categoryList) {
+        setCategories(res.categoryList);
+      } else if (res?.data) {
+        setCategories(res.data);
+      }
+    } catch (err) {
+      console.error("Error loading categories:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
 
   const onSubmit = (data) => {
-    console.log("Form Data Submitted:", data);
-    alert("Product Published Successfully! 🎉");
+    console.log("Product Data Submitted:", data);
+    alert("Product Published Successfully! 🎉🚀");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center">
-      <form 
-        onSubmit={handleSubmit(onSubmit)} 
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center font-sans">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-5xl space-y-6"
       >
         {/* Basic Information Section */}
@@ -24,111 +55,214 @@ const ProductUpload = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Product Name - Full Width */}
+            {/* Product Name */}
             <div className="md:col-span-3">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Name</label>
-              <input 
-                {...register("productName", { required: true })}
-                className={`w-full px-4 py-3 rounded-lg border bg-gray-50 focus:bg-white transition-all outline-none focus:ring-2 ${errors.productName ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:ring-blue-100'}`}
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Product Name
+              </label>
+              <input
+                {...register("productName", { required: "Product name is required" })}
+                placeholder="Enter product name..."
+                className={`w-full px-4 py-3 rounded-lg border bg-gray-50 focus:bg-white transition-all outline-none focus:ring-2 ${errors.productName ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-blue-100"}`}
               />
+              {errors.productName && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.productName.message}</p>}
             </div>
 
-            {/* Description - Full Width */}
+            {/* Description */}
             <div className="md:col-span-3">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Description</label>
-              <textarea 
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Description
+              </label>
+              <textarea
                 rows="4"
                 {...register("description")}
+                placeholder="Write product details here..."
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white transition-all outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
-
-            {/* Select Menus & Inputs */}
+            {/* Category Section (Dynamic) */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Category</label>
-              <select {...register("category")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-100 outline-none">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Category
+              </label>
+              <div className="relative">
+                <select
+                  {...register("category", { required: "Please select a category" })}
+                  className={`w-full px-4 py-3 rounded-lg border bg-gray-50 focus:ring-2 outline-none appearance-none transition-all cursor-pointer ${errors.category ? "border-red-500" : "border-gray-200 focus:ring-blue-100"}`}
+                  disabled={loading}
+                >
+                  <option value="">
+                    {loading ? "Loading..." : "Select Category"}
+                  </option>
+                  {categories.length > 0 &&
+                    categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                </select>
+                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400 font-bold">
+                  ▼
+                </div>
+              </div>
+              {errors.category && (
+                <p className="text-red-500 text-[10px] mt-1 font-bold">
+                  {errors.category.message}
+                </p>
+              )}
+            </div>
+
+            {/* Sub Category */}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Sub Category
+              </label>
+              <select
+                {...register("subCategory")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none appearance-none cursor-pointer"
+              >
                 <option value="">None</option>
-                <option value="electronics">Electronics</option>
-                <option value="fashion">Fashion</option>
               </select>
             </div>
 
-            <div> 
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Sub Category</label>
-              <select {...register("subCategory")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none">
-                <option value="">None</option>
-              </select>
+            {/* Price */}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Price
+              </label>
+              <input
+                type="number"
+                {...register("price")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100"
+              />
             </div>
 
+            {/* Old Price */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Price</label>
-              <input type="number" {...register("price")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Old Price
+              </label>
+              <input
+                type="number"
+                {...register("oldPrice")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
+              />
             </div>
 
+            {/* Is Featured */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Old Price</label>
-              <input type="number" {...register("oldPrice")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none" />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Is Featured</label>
-              <select {...register("isFeatured")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Is Featured?
+              </label>
+              <select
+                {...register("isFeatured")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
+              >
                 <option value="none">None</option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
               </select>
             </div>
 
+            {/* Stock */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Stock</label>
-              <input type="number" {...register("stock")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Product Stock
+              </label>
+              <input
+                type="number"
+                {...register("stock")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
+              />
             </div>
 
+            {/* Brand */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Brand</label>
-              <input {...register("brand")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Brand
+              </label>
+              <input
+                {...register("brand")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
+              />
             </div>
 
+            {/* Discount */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Discount</label>
-              <input type="number" {...register("discount")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none" />
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Discount (%)
+              </label>
+              <input
+                type="number"
+                {...register("discount")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
+              />
             </div>
 
+            {/* RAMs */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product RAMs</label>
-              <select {...register("rams")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Product RAMs
+              </label>
+              <select
+                {...register("rams")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
+              >
                 <option value="">Select RAM</option>
                 <option value="4gb">4GB</option>
                 <option value="8gb">8GB</option>
+                <option value="16gb">16GB</option>
               </select>
             </div>
 
+            {/* Weight */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Weight</label>
-              <select {...register("weight")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Product Weight
+              </label>
+              <select
+                {...register("weight")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
+              >
                 <option value="">None</option>
               </select>
             </div>
 
+            {/* Size */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Size</label>
-              <select {...register("size")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Product Size
+              </label>
+              <select
+                {...register("size")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
+              >
                 <option value="">None</option>
               </select>
             </div>
 
+            {/* Ratings */}
             <div className="flex flex-col justify-center">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ratings</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Ratings
+              </label>
               <div className="flex gap-1 text-gray-300">
                 <Star size={18} className="fill-yellow-400 text-yellow-400" />
-                {[...Array(4)].map((_, i) => <Star key={i} size={18} />)}
+                {[...Array(4)].map((_, i) => (
+                  <Star key={i} size={18} />
+                ))}
               </div>
             </div>
 
-            {/* Location - Full Width */}
+            {/* Location */}
             <div className="md:col-span-3">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Location</label>
-              <select {...register("location")} className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none appearance-none">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                Location
+              </label>
+              <select
+                {...register("location")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none appearance-none cursor-pointer"
+              >
                 <option value="">Select...</option>
                 <option value="dhaka">Dhaka</option>
                 <option value="chattogram">Chattogram</option>
@@ -143,15 +277,17 @@ const ProductUpload = () => {
             <span className="w-2 h-6 bg-blue-600 rounded-full"></span>
             Media And Published
           </h2>
-          
+
           <div className="w-32 h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-all bg-gray-50">
             <Upload size={24} />
-            <span className="text-[10px] uppercase font-bold mt-2">Image Upload</span>
+            <span className="text-[10px] uppercase font-bold mt-2">
+              Image Upload
+            </span>
           </div>
         </div>
 
         {/* Submit Button */}
-        <button 
+        <button
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98]"
         >
@@ -164,14 +300,6 @@ const ProductUpload = () => {
 };
 
 export default ProductUpload;
-
-
-
-
-
-
-
-
 // import React from "react";
 // import { Plus, MoreHorizontal, Home, ChevronDown, UploadCloud, X } from "lucide-react";
 
@@ -212,7 +340,7 @@ export default ProductUpload;
 // const ProductUpload = () => {
 //   return (
 //     <div className="min-h-screen bg-[#F8FAFC] p-4 lg:p-8 font-sans">
-      
+
 //       {/* Header Section */}
 //       <div className="w-full bg-white p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
 //         <h2 className="text-xl font-bold text-gray-800 tracking-tight">Product Upload</h2>
@@ -228,10 +356,10 @@ export default ProductUpload;
 //       </div>
 
 //       <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
 //         {/* Left Column */}
 //         <div className="lg:col-span-2 space-y-8">
-          
+
 //           {/* 1. Basic Information (এখন শুরুতে) */}
 //           <FormSection title="Basic Information">
 //             <InputField label="Product Name" placeholder="Enter product name" />
@@ -266,9 +394,9 @@ export default ProductUpload;
 //             <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mt-4">
 //                {[1, 2].map((i) => (
 //                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm group animate-in fade-in zoom-in duration-300">
-//                    <img 
-//                     src={`https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&q=80`} 
-//                     alt="Preview" 
+//                    <img
+//                     src={`https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&q=80`}
+//                     alt="Preview"
 //                     className="w-full h-full object-cover"
 //                    />
 //                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -284,7 +412,7 @@ export default ProductUpload;
 
 //         {/* Right Column (Organization & Specs) */}
 //         <div className="space-y-8">
-          
+
 //           <FormSection title="Organization">
 //             {["Category", "Brand", "Color", "Size"].map((item) => (
 //               <div key={item} className="group">

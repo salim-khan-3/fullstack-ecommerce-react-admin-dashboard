@@ -1,23 +1,25 @@
 import axiosInstance from './axiosInstance';
-
-
-export const getAllCategories = async (page = 1) => {
+// categoryApi.js
+export const getAllCategories = async (page = 1, limit = 100) => { // এখানে limit যোগ করলাম
   try {
- 
-    const response = await axiosInstance.get(`/category?page=${page}`);
+    // URL-এ limit প্যারামিটারটি পাঠিয়ে দাও
+    const response = await axiosInstance.get(`/category?page=${page}&limit=${limit}`);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Network Error");
   }
 };
-// export const getAllCategories = async () => {
+
+// export const getAllCategories = async (page = 1) => {
 //   try {
-//     const response = await axiosInstance.get('/category');
+ 
+//     const response = await axiosInstance.get(`/category?page=${page}`);
 //     return response.data;
 //   } catch (error) {
 //     throw error.response ? error.response.data : new Error("Network Error");
 //   }
 // };
+
 export const getCategoryById = async (id) => {
   try {
     const response = await axiosInstance.get(`/category/${id}`);
