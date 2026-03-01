@@ -251,8 +251,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CloudLightning, Plus, Info, Upload, X } from "lucide-react";
 import Swal from "sweetalert2";
-import { getAllCategories } from "../../api/categoryApi";
-import { createProduct } from "../../api/productApi";
+import { getAllCategories } from "../../../api/categoryApi";
+import { createProduct } from "../../../api/productApi";
 
 const ProductUpload = () => {
   const [categories, setCategories] = useState([]);
@@ -266,12 +266,12 @@ const ProductUpload = () => {
     formState: { errors },
     reset,
     setValue, // ভ্যালু সেট করার জন্য
-    watch,    // ভ্যালু পর্যবেক্ষণ করার জন্য
+    watch, // ভ্যালু পর্যবেক্ষণ করার জন্য
   } = useForm({
     defaultValues: {
       rating: 0, // ডিফল্ট রেটিং ০
-      location: "dhaka"
-    }
+      location: "dhaka",
+    },
   });
 
   // বর্তমানে রেটিং কত আছে তা ট্র্যাক করার জন্য
@@ -322,10 +322,10 @@ const ProductUpload = () => {
 
     setLoading(true);
     const formData = new FormData();
-    
+
     // ডাটা অবজেক্টের সব কিছু (rating সহ) formData তে অ্যাড করা
     Object.keys(data).forEach((key) => formData.append(key, data[key]));
-    
+
     // ইমেজগুলো অ্যাড করা
     selectedImages.forEach((image) => formData.append("images", image));
 
@@ -358,11 +358,18 @@ const ProductUpload = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-10 flex justify-center font-sans">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-5xl space-y-8">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-5xl space-y-8"
+      >
         {/* Header */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-extrabold text-gray-900">Upload New Product</h1>
-          <p className="text-gray-500">Add photos and details about your product.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Upload New Product
+          </h1>
+          <p className="text-gray-500">
+            Add photos and details about your product.
+          </p>
         </div>
 
         {/* 1. Basic Information */}
@@ -371,9 +378,10 @@ const ProductUpload = () => {
             <Info className="text-blue-600" size={20} /> Basic Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             <div className="md:col-span-2">
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Product Name</label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Product Name
+              </label>
               <input
                 {...register("name", { required: "Name is required" })}
                 placeholder="Ex: iPhone 15 Pro Max"
@@ -382,29 +390,39 @@ const ProductUpload = () => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Description</label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Description
+              </label>
               <textarea
                 rows="4"
-                {...register("description", { required: "Description is required" })}
+                {...register("description", {
+                  required: "Description is required",
+                })}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100 transition-all"
               />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Category</label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Category
+              </label>
               <select
                 {...register("category", { required: "Category is required" })}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none"
               >
                 <option value="">Select Category</option>
                 {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Brand Name</label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Brand Name
+              </label>
               <input
                 {...register("brand", { required: "Brand is required" })}
                 placeholder="Ex: Apple, Samsung"
@@ -413,18 +431,32 @@ const ProductUpload = () => {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Price ($)</label>
-              <input type="number" {...register("price", { required: true })} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none" />
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Price ($)
+              </label>
+              <input
+                type="number"
+                {...register("price", { required: true })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none"
+              />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Stock Count</label>
-              <input type="number" {...register("countInStock", { required: true })} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none" />
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Stock Count
+              </label>
+              <input
+                type="number"
+                {...register("countInStock", { required: true })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none"
+              />
             </div>
 
             {/* Rating Section */}
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Initial Rating</label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Initial Rating
+              </label>
               <div className="flex gap-1 bg-gray-50 p-3 rounded-xl border border-gray-200 w-fit">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -449,14 +481,21 @@ const ProductUpload = () => {
                     </svg>
                   </button>
                 ))}
-                <span className="ml-2 text-gray-500 font-bold self-center">({currentRating || 0})</span>
+                <span className="ml-2 text-gray-500 font-bold self-center">
+                  ({currentRating || 0})
+                </span>
               </div>
               <input type="hidden" {...register("rating")} />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Shipping Location</label>
-              <select {...register("location")} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none">
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Shipping Location
+              </label>
+              <select
+                {...register("location")}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none"
+              >
                 <option value="dhaka">Dhaka</option>
                 <option value="chattogram">Chattogram</option>
               </select>
@@ -471,8 +510,15 @@ const ProductUpload = () => {
           </h2>
           <div className="flex flex-wrap gap-4">
             {previews.map((url, index) => (
-              <div key={index} className="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 shadow-sm group">
-                <img src={url} alt="preview" className="w-full h-full object-cover" />
+              <div
+                key={index}
+                className="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 shadow-sm group"
+              >
+                <img
+                  src={url}
+                  alt="preview"
+                  className="w-full h-full object-cover"
+                />
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
@@ -484,8 +530,16 @@ const ProductUpload = () => {
             ))}
             <label className="w-32 h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-all bg-gray-50">
               <Plus size={24} />
-              <span className="text-[10px] uppercase font-bold mt-2 text-center px-2">Image Upload</span>
-              <input type="file" multiple className="hidden" onChange={handleImageChange} accept="image/*" />
+              <span className="text-[10px] uppercase font-bold mt-2 text-center px-2">
+                Image Upload
+              </span>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleImageChange}
+                accept="image/*"
+              />
             </label>
           </div>
         </div>
@@ -497,8 +551,12 @@ const ProductUpload = () => {
             disabled={loading}
             className={`w-full ${loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"} text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.99]`}
           >
-            {loading ? "PUBLISHING..." : (
-              <><CloudLightning size={22} fill="currentColor" /> PUBLISH PRODUCT</>
+            {loading ? (
+              "PUBLISHING..."
+            ) : (
+              <>
+                <CloudLightning size={22} fill="currentColor" /> PUBLISH PRODUCT
+              </>
             )}
           </button>
         </div>

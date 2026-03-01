@@ -7,12 +7,13 @@ import { createContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import ProductDetails from "./pages/ProductDetails/ProductDetails";
-import ProductUpload from "./pages/ProductUpload/ProductUpload";
+import ProductDetails from "./pages/Products/ProductDetails/ProductDetails";
+import ProductUpload from "./pages/Products/ProductUpload/ProductUpload";
 import CategoryForm from "./pages/Category/AddCategory/AddCategory";
 import { Toaster } from "react-hot-toast";
 import CategoryList from "./pages/Category/CategoryList/CategoryList";
 import EditCategory from "./pages/Category/Editcategory/Editcategory";
+import ProductList from "./pages/Products/ProductList/ProductList";
 
 export const MyContext = createContext();
 
@@ -20,14 +21,12 @@ function App() {
   const [isToggleSidebar, setIsToggleSidebar] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHideSidebarAndNavbar, setIsHideSidebarAndNavbar] = useState(false);
-  const [themeMode, setThemeMode] = useState("light");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -42,26 +41,25 @@ function App() {
     isMobile,
   };
 
-  const sidebarWidth = 320;
+  const sidebarWidth = 260; // আপনার সাইডবারের উইডথ অনুযায়ী সেট করুন
 
   return (
     <BrowserRouter>
       <MyContext.Provider value={values}>
-         <Toaster position="top-right" />
-        {/* Only show Navbar if not hidden */}
+        <Toaster position="top-right" />
+        
+        {/* Navbar fixed থাকবে */}
         {!isHideSidebarAndNavbar && <Navbar />}
 
-        <div
-          className={`flex w-full h-[calc(100vh-${!isHideSidebarAndNavbar ? "64px" : "0px"})] overflow-hidden bg-gray-50 transition-all duration-300`}
-        >
-          {/* Only show Sidebar if not hidden */}
-          {/* Sidebar */}
+        <div className="flex w-full min-h-screen bg-gray-50">
+          
+          {/* Sidebar Section */}
           {!isHideSidebarAndNavbar && (
             <>
-              {/* Overlay (only mobile) */}
+              {/* Mobile Overlay */}
               {isMobile && isToggleSidebar && (
                 <div
-                  className="fixed inset-0 bg-black/40 z-40"
+                  className="fixed inset-0 bg-black/40 z-[60]"
                   onClick={() => setIsToggleSidebar(false)}
                 />
               )}
@@ -69,56 +67,37 @@ function App() {
               <motion.div
                 initial={false}
                 animate={{
+                  width: isToggleSidebar ? sidebarWidth : 0,
                   x: isMobile ? (isToggleSidebar ? 0 : -sidebarWidth) : 0,
-                  width: !isMobile
-                    ? isToggleSidebar
-                      ? sidebarWidth
-                      : 0
-                    : sidebarWidth,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
                 }}
                 className={`
-        ${isMobile ? "fixed z-50 h-full" : "relative"}
-        bg-white border-r border-gray-100 overflow-hidden
-      `}
-                style={{ width: sidebarWidth }}
+                  bg-white border-r border-gray-100 shadow-sm
+                  ${isMobile ? "fixed left-0 top-0 h-full z-[70]" : "sticky top-0 h-screen"}
+                  overflow-hidden
+                `}
               >
                 <Sidebar />
               </motion.div>
             </>
           )}
 
-          {/* Main Content */}
-          <motion.div
-            layout
-            className={`flex-1 h-full overflow-y-auto transition-all duration-300 ${
-              !isMobile && isToggleSidebar ? "ml-0" : ""
-            }`}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-              duration: 0.4,
-            }}
-          >
-            <div className="p-6">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <main className="p-4 md:p-6">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/products/list" element={<ProductList />} />
                 <Route path="/product/details" element={<ProductDetails />} />
                 <Route path="/product/upload" element={<ProductUpload />} />
                 <Route path="/category/add" element={<CategoryForm />} />
                 <Route path="/category/list" element={<CategoryList />} />
                 <Route path="/dashboard/categories/edit/:id" element={<EditCategory />} />
               </Routes>
-            </div>
-          </motion.div>
+            </main>
+          </div>
         </div>
       </MyContext.Provider>
     </BrowserRouter>

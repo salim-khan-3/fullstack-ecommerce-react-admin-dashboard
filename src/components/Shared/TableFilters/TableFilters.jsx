@@ -11,9 +11,13 @@ const TableFilters = () => {
   ];
 
   return (
-    <div className="p-8 bg-white/80 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+    /* বর্ডার রেডিয়াস পরিবর্তন: 
+       rounded-t-[2rem] -> শুধু উপরের বাম ও ডান কোণা রাউন্ডেড হবে।
+       border-x border-t -> নিচে যেন বর্ডার না থাকে (যদি টেবিলের সাথে যুক্ত করতে চাও)। 
+    */
+    <div className="p-8 bg-white/80 backdrop-blur-xl rounded-t-[2rem] border-x border-t border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
       
-      {/* Header with Glassmorphism pill */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
         <div>
           <div className="flex items-center gap-3">
@@ -33,7 +37,7 @@ const TableFilters = () => {
         </div>
       </div>
 
-      {/* Modern Filter Interface */}
+      {/* Filter Interface */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filterGroups.map((group) => (
           <div key={group.id} className="relative">
@@ -49,12 +53,13 @@ const TableFilters = () => {
               <ChevronDown size={16} className={`text-gray-400 group-hover:text-blue-500 transition-transform duration-300 ${activeFilter === group.id ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Floating Dropdown Menu */}
+            {/* Dropdown Menu */}
             {activeFilter === group.id && (
-              <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] border border-gray-50 p-2 z-50 animate-in fade-in zoom-in duration-200">
+              <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] border border-gray-50 p-2 z-50">
                 {group.options.map((opt) => (
                   <button 
                     key={opt}
+                    onClick={() => setActiveFilter(null)}
                     className="w-full flex items-center justify-between px-4 py-3 hover:bg-blue-50 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-700 transition-all text-left"
                   >
                     {opt}
@@ -66,7 +71,7 @@ const TableFilters = () => {
           </div>
         ))}
 
-        {/* Dynamic Search Bar */}
+        {/* Quick Search */}
         <div className="relative">
           <label className="block text-[10px] font-black text-blue-600/60 tracking-[0.2em] mb-3 ml-1 uppercase">
             Quick Search
@@ -82,7 +87,7 @@ const TableFilters = () => {
         </div>
       </div>
 
-      {/* Bottom Footer Actions */}
+      {/* Footer Actions */}
       <div className="mt-10 pt-8 border-t border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -94,7 +99,7 @@ const TableFilters = () => {
             <X size={16} />
             Clear All
           </button>
-          <button className="flex items-center gap-2 px-8 py-3 bg-blue-600 rounded-2xl text-sm font-bold text-white shadow-[0_10px_25px_rgba(37,99,235,0.3)] hover:bg-blue-700 hover:shadow-none hover:translate-y-0.5 transition-all active:scale-95">
+          <button className="flex items-center gap-2 px-8 py-3 bg-blue-600 rounded-2xl text-sm font-bold text-white shadow-[0_10px_25px_rgba(37,99,235,0.3)] hover:bg-blue-700 transition-all active:scale-95">
             <Filter size={16} />
             Apply Filters
           </button>
