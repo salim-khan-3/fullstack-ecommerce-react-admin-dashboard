@@ -1,476 +1,258 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Upload, CloudLightning, Star } from "lucide-react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { 
+  CloudLightning, 
+  Plus, 
+  Trash2, 
+  Image as ImageIcon, 
+  Layers, 
+  Info, 
+  MapPin, 
+  Tag 
+} from "lucide-react";
 import { getAllCategories } from "../../api/categoryApi";
 
 const ProductUpload = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // useForm Setup
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      brand: "",
+      price: "",
+      countInStock: "",
+      isFeatured: "false",
+      location: "",
+      images: [""], // শুরুতে একটি খালি লিঙ্ক ইনপুট থাকবে
+    },
+  });
 
-  // ProductUpload.jsx এর ভেতরে useEffect অংশ
-useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      // আমরা প্রথম পেজের ১০০টি ডাটা চাচ্ছি (যা তোমার সব ক্যাটাগরি কভার করবে)
-      const res = await getAllCategories(1, 100); 
-      
-      if (res?.categoryList) {
-        setCategories(res.categoryList);
-      } else if (res?.data) {
-        setCategories(res.data);
+  // Dynamic Image Links Handler
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "images",
+  });
+
+  // Fetch Categories
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await getAllCategories(1, 100);
+        if (res?.categoryList) {
+          setCategories(res.categoryList);
+        } else if (res?.data) {
+          setCategories(res.data);
+        }
+      } catch (err) {
+        console.error("Error loading categories:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error loading categories:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchData();
+  }, []);
 
-  fetchData();
-}, []);
-
+  // Form Submit Logic
   const onSubmit = (data) => {
-    console.log("Product Data Submitted:", data);
-    alert("Product Published Successfully! 🎉🚀");
+    // Schema অনুযায়ী ডেটা ক্লিন করা
+    const finalProductData = {
+      name: data.name,
+      description: data.description,
+      brand: data.brand || "",
+      price: Number(data.price) || 0,
+      category: data.category,
+      countInStock: Number(data.countInStock) || 0,
+      isFeatured: data.isFeatured === "true",
+      location: data.location,
+      images: data.images.filter((img) => img.trim() !== ""), // খালি ইনপুটগুলো রিমুভ করা
+    };
+
+    console.log("--- Ready for MongoDB ---", finalProductData);
+    alert("Product Data Generated! Check Console. 🚀");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10 flex justify-center font-sans">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-5xl space-y-6"
+        className="w-full max-w-5xl space-y-8"
       >
-        {/* Basic Information Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <span className="w-2 h-6 bg-blue-600 rounded-full"></span>
+        {/* Header Section */}
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-extrabold text-gray-900">Upload New Product</h1>
+          <p className="text-gray-500">Fill in the details below to publish your product.</p>
+        </div>
+
+        {/* 1. Basic Information Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+          <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <Info className="text-blue-600" size={20} />
             Basic Information
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Product Name */}
-            <div className="md:col-span-3">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Product Name
-              </label>
+            <div className="md:col-span-2">
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Product Name</label>
               <input
-                {...register("productName", { required: "Product name is required" })}
-                placeholder="Enter product name..."
-                className={`w-full px-4 py-3 rounded-lg border bg-gray-50 focus:bg-white transition-all outline-none focus:ring-2 ${errors.productName ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-blue-100"}`}
+                {...register("name", { required: "Name is required" })}
+                placeholder="Ex: iPhone 15 Pro Max"
+                className={`w-full px-4 py-3 rounded-xl border bg-gray-50 outline-none transition-all focus:ring-2 ${errors.name ? "border-red-500 focus:ring-red-100" : "border-gray-200 focus:ring-blue-100"}`}
               />
-              {errors.productName && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.productName.message}</p>}
+              {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name.message}</span>}
             </div>
 
             {/* Description */}
-            <div className="md:col-span-3">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Description
-              </label>
+            <div className="md:col-span-2">
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Description</label>
               <textarea
                 rows="4"
-                {...register("description")}
-                placeholder="Write product details here..."
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white transition-all outline-none focus:ring-2 focus:ring-blue-100"
+                {...register("description", { required: "Description is required" })}
+                placeholder="Describe your product features..."
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100 transition-all"
               />
             </div>
-            {/* Category Section (Dynamic) */}
+
+            {/* Category */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Category
-              </label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Category</label>
               <div className="relative">
                 <select
-                  {...register("category", { required: "Please select a category" })}
-                  className={`w-full px-4 py-3 rounded-lg border bg-gray-50 focus:ring-2 outline-none appearance-none transition-all cursor-pointer ${errors.category ? "border-red-500" : "border-gray-200 focus:ring-blue-100"}`}
-                  disabled={loading}
+                  {...register("category", { required: "Select a category" })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-blue-100"
                 >
-                  <option value="">
-                    {loading ? "Loading..." : "Select Category"}
-                  </option>
-                  {categories.length > 0 &&
-                    categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </option>
-                    ))}
+                  <option value="">{loading ? "Loading..." : "Select Category"}</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  ))}
                 </select>
-                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400 font-bold">
-                  ▼
-                </div>
+                <Tag className="absolute right-4 top-3.5 text-gray-400 pointer-events-none" size={18} />
               </div>
-              {errors.category && (
-                <p className="text-red-500 text-[10px] mt-1 font-bold">
-                  {errors.category.message}
-                </p>
-              )}
             </div>
 
-            {/* Sub Category */}
+            {/* Brand */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Sub Category
-              </label>
-              <select
-                {...register("subCategory")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none appearance-none cursor-pointer"
-              >
-                <option value="">None</option>
-              </select>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Brand</label>
+              <input
+                {...register("brand")}
+                placeholder="Ex: Apple, Samsung"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100"
+              />
             </div>
 
             {/* Price */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Price
-              </label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Price ($)</label>
               <input
                 type="number"
-                {...register("price")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100"
+                {...register("price", { required: "Price is required" })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
 
-            {/* Old Price */}
+            {/* Stock */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Old Price
-              </label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Stock Count</label>
               <input
                 type="number"
-                {...register("oldPrice")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
+                {...register("countInStock", { required: "Stock is required" })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
 
             {/* Is Featured */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Is Featured?
-              </label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Featured Product?</label>
               <select
                 {...register("isFeatured")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none cursor-pointer focus:ring-2 focus:ring-blue-100"
               >
-                <option value="none">None</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="false">No</option>
+                <option value="true">Yes</option>
               </select>
-            </div>
-
-            {/* Stock */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Product Stock
-              </label>
-              <input
-                type="number"
-                {...register("stock")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
-              />
-            </div>
-
-            {/* Brand */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Brand
-              </label>
-              <input
-                {...register("brand")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
-              />
-            </div>
-
-            {/* Discount */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Discount (%)
-              </label>
-              <input
-                type="number"
-                {...register("discount")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none"
-              />
-            </div>
-
-            {/* RAMs */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Product RAMs
-              </label>
-              <select
-                {...register("rams")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
-              >
-                <option value="">Select RAM</option>
-                <option value="4gb">4GB</option>
-                <option value="8gb">8GB</option>
-                <option value="16gb">16GB</option>
-              </select>
-            </div>
-
-            {/* Weight */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Product Weight
-              </label>
-              <select
-                {...register("weight")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
-              >
-                <option value="">None</option>
-              </select>
-            </div>
-
-            {/* Size */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Product Size
-              </label>
-              <select
-                {...register("size")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none cursor-pointer"
-              >
-                <option value="">None</option>
-              </select>
-            </div>
-
-            {/* Ratings */}
-            <div className="flex flex-col justify-center">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Ratings
-              </label>
-              <div className="flex gap-1 text-gray-300">
-                <Star size={18} className="fill-yellow-400 text-yellow-400" />
-                {[...Array(4)].map((_, i) => (
-                  <Star key={i} size={18} />
-                ))}
-              </div>
             </div>
 
             {/* Location */}
-            <div className="md:col-span-3">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                Location
-              </label>
-              <select
-                {...register("location")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 outline-none appearance-none cursor-pointer"
-              >
-                <option value="">Select...</option>
-                <option value="dhaka">Dhaka</option>
-                <option value="chattogram">Chattogram</option>
-              </select>
+            <div>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">Shipping Location</label>
+              <div className="relative">
+                <select
+                  {...register("location")}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-blue-100"
+                >
+                  <option value="">Select Location</option>
+                  <option value="dhaka">Dhaka</option>
+                  <option value="chattogram">Chattogram</option>
+                </select>
+                <MapPin className="absolute right-4 top-3.5 text-gray-400 pointer-events-none" size={18} />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Media Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <span className="w-2 h-6 bg-blue-600 rounded-full"></span>
-            Media And Published
+        {/* 2. Media Section (Dynamic Links) */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+          <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <Layers className="text-blue-600" size={20} />
+            Product Images (Links)
           </h2>
 
-          <div className="w-32 h-32 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-all bg-gray-50">
-            <Upload size={24} />
-            <span className="text-[10px] uppercase font-bold mt-2">
-              Image Upload
-            </span>
+          <div className="space-y-4">
+            {fields.map((field, index) => (
+              <div key={field.id} className="flex gap-3 items-center group">
+                <div className="relative flex-1">
+                  <span className="absolute left-4 top-3.5 text-gray-400 font-bold text-xs">{index + 1}</span>
+                  <input
+                    {...register(`images.${index}`, { required: "Link cannot be empty" })}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  />
+                </div>
+                {fields.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                )}
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => append("")}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition-all"
+            >
+              <Plus size={18} />
+              Add More Image Link
+            </button>
           </div>
         </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98]"
-        >
-          <CloudLightning size={20} />
-          PUBLISH AND VIEW
-        </button>
+        {/* 3. Submit Button */}
+        <div className="pt-4">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-100 flex items-center justify-center gap-3 transition-all transform active:scale-[0.99]"
+          >
+            <CloudLightning size={22} fill="currentColor" />
+            PUBLISH PRODUCT
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
 export default ProductUpload;
-// import React from "react";
-// import { Plus, MoreHorizontal, Home, ChevronDown, UploadCloud, X } from "lucide-react";
-
-// // --- Reusable Components ---
-
-// const FormSection = ({ title, children }) => (
-//   <div className="bg-white/50 p-6 rounded-3xl border border-gray-100 shadow-sm">
-//     <div className="flex justify-between items-center mb-6">
-//       <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-//       <MoreHorizontal className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors" />
-//     </div>
-//     <div className="space-y-5">{children}</div>
-//   </div>
-// );
-
-// const InputField = ({ label, type = "text", placeholder, isTextArea, rows = 3, selectOptions }) => {
-//   const labelStyle = "text-xs font-bold text-gray-500 uppercase tracking-wider ml-1";
-//   const inputStyle = "w-full bg-white border-none rounded-xl p-3 mt-1 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-400 text-gray-700";
-
-//   return (
-//     <div className="w-full">
-//       <label className={labelStyle}>{label}</label>
-//       {isTextArea ? (
-//         <textarea rows={rows} placeholder={placeholder} className={`${inputStyle} resize-none`} />
-//       ) : selectOptions ? (
-//         <select className={inputStyle}>
-//           {selectOptions.map((opt, i) => <option key={i}>{opt}</option>)}
-//         </select>
-//       ) : (
-//         <input type={type} placeholder={placeholder} className={inputStyle} />
-//       )}
-//     </div>
-//   );
-// };
-
-// // --- Main Component ---
-
-// const ProductUpload = () => {
-//   return (
-//     <div className="min-h-screen bg-[#F8FAFC] p-4 lg:p-8 font-sans">
-
-//       {/* Header Section */}
-//       <div className="w-full bg-white p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-//         <h2 className="text-xl font-bold text-gray-800 tracking-tight">Product Upload</h2>
-//         <div className="text-[13px] text-gray-400 flex items-center gap-2">
-//           <span className="flex items-center gap-1 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 text-gray-600 cursor-pointer">
-//             <Home size={14} /> Dashboard
-//           </span>
-//           <span className="text-gray-300">/</span>
-//           <span>Products</span>
-//           <span className="text-gray-300">/</span>
-//           <span className="font-semibold text-blue-600">Upload</span>
-//         </div>
-//       </div>
-
-//       <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-//         {/* Left Column */}
-//         <div className="lg:col-span-2 space-y-8">
-
-//           {/* 1. Basic Information (এখন শুরুতে) */}
-//           <FormSection title="Basic Information">
-//             <InputField label="Product Name" placeholder="Enter product name" />
-//             <InputField label="Description" placeholder="Write detailed description..." isTextArea rows={5} />
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-//               <InputField label="Category" selectOptions={["Mans", "Womans", "Kids"]} />
-//               <InputField label="Brand" selectOptions={["Richman", "Ecstasy", "Apex"]} />
-//             </div>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-//               <InputField label="Regular Price" type="number" placeholder="0.00" />
-//               <InputField label="Discount Price" type="number" placeholder="0.00" />
-//             </div>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-//               <InputField label="Shipping Fee" type="number" placeholder="0.00" />
-//               <InputField label="Tax Rate" type="number" placeholder="0%" />
-//             </div>
-//             <InputField label="Tags" placeholder="Enter tags (e.g. fashion, summer)" isTextArea rows={3} />
-//           </FormSection>
-
-//           {/* 2. Media & Published Section (এখন শেষে) */}
-//           <FormSection title="Media & Published">
-//             <div className="border-2 border-dashed border-gray-200 rounded-3xl p-8 flex flex-col items-center justify-center bg-white/30 hover:bg-white/50 hover:border-blue-400 transition-all cursor-pointer group">
-//               <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-//                 <UploadCloud size={32} />
-//               </div>
-//               <h3 className="text-gray-700 font-bold text-lg text-center">Click to upload or drag and drop</h3>
-//               <p className="text-gray-400 text-sm mt-1">PNG, JPG or GIF (Max 1280x720px)</p>
-//               <input type="file" className="hidden" multiple />
-//             </div>
-
-//             {/* Image Previews */}
-//             <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-//                {[1, 2].map((i) => (
-//                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm group animate-in fade-in zoom-in duration-300">
-//                    <img
-//                     src={`https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&q=80`}
-//                     alt="Preview"
-//                     className="w-full h-full object-cover"
-//                    />
-//                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-//                      <button className="bg-rose-500 text-white p-2 rounded-xl shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
-//                        <X size={16} />
-//                      </button>
-//                    </div>
-//                  </div>
-//                ))}
-//             </div>
-//           </FormSection>
-//         </div>
-
-//         {/* Right Column (Organization & Specs) */}
-//         <div className="space-y-8">
-
-//           <FormSection title="Organization">
-//             {["Category", "Brand", "Color", "Size"].map((item) => (
-//               <div key={item} className="group">
-//                 <label className="text-xs font-bold text-gray-500 uppercase ml-1">Add {item}</label>
-//                 <div className="flex gap-2 mt-1">
-//                   <input type="text" placeholder={`New ${item.toLowerCase()}`} className="flex-1 bg-white border-none rounded-xl p-3 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
-//                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-xl shadow-md transition-all active:scale-95 font-bold text-[10px] uppercase">Add</button>
-//                 </div>
-//               </div>
-//             ))}
-//           </FormSection>
-
-//           <FormSection title="Specification">
-//             <div className="grid grid-cols-2 gap-4">
-//               {/* Size Dropdown */}
-//               <div className="relative group">
-//                 <label className="text-[11px] font-bold text-gray-500 uppercase ml-1">Size</label>
-//                 <div className="relative mt-1">
-//                   <select className="appearance-none w-full bg-white border-none rounded-2xl p-3 shadow-sm focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-700 text-sm cursor-pointer transition-all hover:shadow-md">
-//                     <option disabled selected>Select Size</option>
-//                     <option>Small (Sm)</option>
-//                     <option>Medium (Md)</option>
-//                     <option>Large (Lg)</option>
-//                   </select>
-//                   <ChevronDown size={16} className="absolute right-4 top-4 text-gray-400 pointer-events-none group-hover:text-blue-500 transition-colors" />
-//                 </div>
-//               </div>
-
-//               {/* Color Dropdown */}
-//               <div className="relative group">
-//                 <label className="text-[11px] font-bold text-gray-500 uppercase ml-1">Color</label>
-//                 <div className="relative mt-1">
-//                   <select className="appearance-none w-full bg-white border-none rounded-2xl p-3 shadow-sm focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-700 text-sm cursor-pointer transition-all hover:shadow-md">
-//                     <option disabled selected>Select Color</option>
-//                     <option>Black</option>
-//                     <option>Deep Blue</option>
-//                     <option>White</option>
-//                   </select>
-//                   <ChevronDown size={16} className="absolute right-4 top-4 text-gray-400 pointer-events-none group-hover:text-blue-500 transition-colors" />
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="grid grid-cols-2 gap-4 pt-2">
-//               <InputField label="Stock" type="number" placeholder="0" />
-//               <InputField label="Weight" type="text" placeholder="0.5kg" />
-//             </div>
-
-//             <button className="group w-full mt-6 bg-gradient-to-br from-gray-900 via-gray-800 to-black hover:from-blue-600 hover:to-blue-700 text-white py-4 rounded-2xl font-bold shadow-xl transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2">
-//               UPLOAD PRODUCT
-//               <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-//             </button>
-//           </FormSection>
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProductUpload;

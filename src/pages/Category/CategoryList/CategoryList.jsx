@@ -1,6 +1,3 @@
-
-
-
 import { useSearchParams } from "react-router-dom"; // ১. ইম্পোর্ট করা হয়েছে
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,15 +18,32 @@ export default function CategoryList() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [selected, setSelected] = useState([]);
 
+  // const fetchCategories = useCallback(async (page) => {
+  //   try {
+  //     setLoading(true);
+  //     const data = await getAllCategories(page);
+  //     setCategories(data.categoryList || []);
+  //     setTotalPages(data.totalPages || 1);
+  //     setTotalItems(data.totalItems || 0);
+  //   } catch (err) {
+  //     setError(err.message || "Failed to load categories");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+  // CategoryList.jsx এর ভেতরে fetchCategories ফাংশনটি এভাবে পরিবর্তন করুন:
+
   const fetchCategories = useCallback(async (page) => {
     try {
       setLoading(true);
-      const data = await getAllCategories(page);
+      const itemsPerPage = 6;
+      const data = await getAllCategories(page, itemsPerPage);
+
       setCategories(data.categoryList || []);
       setTotalPages(data.totalPages || 1);
       setTotalItems(data.totalItems || 0);
@@ -39,7 +53,6 @@ export default function CategoryList() {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     fetchCategories(currentPage);
   }, [currentPage, fetchCategories]);
@@ -61,7 +74,13 @@ export default function CategoryList() {
       if (result.isConfirmed) {
         try {
           await deleteCategory(categoryId);
-          Swal.fire({ title: "Deleted!", text: "Category has been deleted.", icon: "success", timer: 1500, showConfirmButton: false });
+          Swal.fire({
+            title: "Deleted!",
+            text: "Category has been deleted.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+          });
           fetchCategories(currentPage);
         } catch (err) {
           Swal.fire("Error!", err.message || "Failed to delete.", "error");
@@ -80,19 +99,20 @@ export default function CategoryList() {
   }));
 
   const toggleSelect = (id) =>
-    setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
 
   const toggleAll = () => {
     const ids = currentData.map((d) => d._id);
     const allSelected = ids.every((id) => selected.includes(id));
-    if (allSelected) setSelected((prev) => prev.filter((x) => !ids.includes(x)));
+    if (allSelected)
+      setSelected((prev) => prev.filter((x) => !ids.includes(x)));
     else setSelected((prev) => [...new Set([...prev, ...ids])]);
   };
 
   if (loading) {
-    return (
-      <Loader></Loader>
-    );
+    return <Loader></Loader>;
   }
 
   return (
@@ -114,17 +134,36 @@ export default function CategoryList() {
                   <input
                     type="checkbox"
                     onChange={toggleAll}
-                    checked={currentData.length > 0 && currentData.every((d) => selected.includes(d._id))}
+                    checked={
+                      currentData.length > 0 &&
+                      currentData.every((d) => selected.includes(d._id))
+                    }
                   />
                 </th>
-                {["UID", "IMAGE", "CATEGORY", "IMAGE URL", "COLOR", "ACTION"].map((h) => (
-                  <th key={h} className="px-3 py-4 text-xs font-bold text-white uppercase">{h}</th>
+                {[
+                  "UID",
+                  "IMAGE",
+                  "CATEGORY",
+                  "IMAGE URL",
+                  "COLOR",
+                  "ACTION",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="px-3 py-4 text-xs font-bold text-white uppercase"
+                  >
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {currentData.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-16 text-gray-400">No categories found.</td></tr>
+                <tr>
+                  <td colSpan={7} className="text-center py-16 text-gray-400">
+                    No categories found.
+                  </td>
+                </tr>
               ) : (
                 currentData.map((row, idx) => (
                   <CategoryTableRow

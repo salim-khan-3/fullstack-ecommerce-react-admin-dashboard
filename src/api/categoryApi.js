@@ -1,6 +1,6 @@
 import axiosInstance from './axiosInstance';
 // categoryApi.js
-export const getAllCategories = async (page = 1, limit = 100) => { // এখানে limit যোগ করলাম
+export const getAllCategories = async (page = 1, limit = 6) => { // এখানে limit যোগ করলাম
   try {
     // URL-এ limit প্যারামিটারটি পাঠিয়ে দাও
     const response = await axiosInstance.get(`/category?page=${page}&limit=${limit}`);
