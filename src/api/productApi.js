@@ -50,3 +50,27 @@ export const updateProduct = async (id, formData) => {
         throw error.response ? error.response.data : error.message;
     }
 };
+
+// ৫. নির্দিষ্ট আইডি দিয়ে একটি প্রোডাক্ট গেট করা
+export const getProductById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/product/details/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error.response ? error.response.data : error.message;
+    }
+};
+
+// ৬. ক্যাটাগরি আইডি দিয়ে প্রোডাক্ট ফিল্টার করা
+export const getProductsByCategory = async (categoryId) => {
+    try {
+        // যদি categoryId থাকে তবে ফিল্টার রাউটে যাবে, নাহলে সব প্রোডাক্ট আনবে
+        const url = categoryId ? `/products/category/${categoryId}` : '/products';
+        
+        const response = await axiosInstance.get(url);
+        return response.data; 
+    } catch (error) {
+        console.error("Fetch Error:", error.response?.data?.message || error.message);
+        throw error.response ? error.response.data : error.message;
+    }
+};

@@ -14,6 +14,7 @@ import { Toaster } from "react-hot-toast";
 import CategoryList from "./pages/Category/CategoryList/CategoryList";
 import EditCategory from "./pages/Category/Editcategory/Editcategory";
 import ProductList from "./pages/Products/ProductList/ProductList";
+import { ProductProvider } from "./context/ProductContext";
 
 export const MyContext = createContext();
 
@@ -46,59 +47,65 @@ function App() {
   return (
     <BrowserRouter>
       <MyContext.Provider value={values}>
-        <Toaster position="top-right" />
-        
-        {/* Navbar fixed থাকবে */}
-        {!isHideSidebarAndNavbar && <Navbar />}
+        <ProductProvider>
+          <Toaster position="top-right" />
+          {/* Navbar fixed থাকবে */}
+          {!isHideSidebarAndNavbar && <Navbar />}
 
-        <div className="flex w-full min-h-screen bg-gray-50">
-          
-          {/* Sidebar Section */}
-          {!isHideSidebarAndNavbar && (
-            <>
-              {/* Mobile Overlay */}
-              {isMobile && isToggleSidebar && (
-                <div
-                  className="fixed inset-0 bg-black/40 z-[60]"
-                  onClick={() => setIsToggleSidebar(false)}
-                />
-              )}
+          <div className="flex w-full min-h-screen bg-gray-50">
+            {/* Sidebar Section */}
+            {!isHideSidebarAndNavbar && (
+              <>
+                {/* Mobile Overlay */}
+                {isMobile && isToggleSidebar && (
+                  <div
+                    className="fixed inset-0 bg-black/40 z-[60]"
+                    onClick={() => setIsToggleSidebar(false)}
+                  />
+                )}
 
-              <motion.div
-                initial={false}
-                animate={{
-                  width: isToggleSidebar ? sidebarWidth : 0,
-                  x: isMobile ? (isToggleSidebar ? 0 : -sidebarWidth) : 0,
-                }}
-                className={`
+                <motion.div
+                  initial={false}
+                  animate={{
+                    width: isToggleSidebar ? sidebarWidth : 0,
+                    x: isMobile ? (isToggleSidebar ? 0 : -sidebarWidth) : 0,
+                  }}
+                  className={`
                   bg-white border-r border-gray-100 shadow-sm
                   ${isMobile ? "fixed left-0 top-0 h-full z-[70]" : "sticky top-0 h-screen"}
                   overflow-hidden
                 `}
-              >
-                <Sidebar />
-              </motion.div>
-            </>
-          )}
+                >
+                  <Sidebar />
+                </motion.div>
+              </>
+            )}
 
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col min-w-0">
-            <main className="p-4 md:p-6">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/products/list" element={<ProductList />} />
-                <Route path="/product/details" element={<ProductDetails />} />
-                <Route path="/product/upload" element={<ProductUpload />} />
-                <Route path="/category/add" element={<CategoryForm />} />
-                <Route path="/category/list" element={<CategoryList />} />
-                <Route path="/dashboard/categories/edit/:id" element={<EditCategory />} />
-              </Routes>
-            </main>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+              <main className="p-4 md:p-6">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/products/list" element={<ProductList />} />
+                  <Route
+                    path="/product/details/:id"
+                    element={<ProductDetails />}
+                  />
+                  <Route path="/product/upload" element={<ProductUpload />} />
+                  <Route path="/category/add" element={<CategoryForm />} />
+                  <Route path="/category/list" element={<CategoryList />} />
+                  <Route
+                    path="/dashboard/categories/edit/:id"
+                    element={<EditCategory />}
+                  />
+                </Routes>
+              </main>
+            </div>
           </div>
-        </div>
+        </ProductProvider>
       </MyContext.Provider>
     </BrowserRouter>
   );

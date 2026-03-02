@@ -3,17 +3,16 @@ import PageHeader from '../../../components/ProductComponent/PageHeader/PageHead
 import StatsCards from '../../../components/ProductComponent/StatsCards/StatsCards';
 import TableFilters from '../../../components/Shared/TableFilters/TableFilters';
 import ProductTable from '../../../components/Shared/ProductTable/ProductTable';
-import { getAllProducts } from "../../../api/productApi"; // আপনার API পাথ অনুযায়ী ঠিক করে নিন
+import { getAllProducts } from "../../../api/productApi";
 
 const ProductList = () => {
-    const [products, setProducts] = useState([]); // ডিফল্ট খালি অ্যারে
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const data = await getAllProducts();
-                // API যদি সরাসরি অ্যারে দেয় তবে data, নতুবা data.products
                 setProducts(Array.isArray(data) ? data : data.products || []); 
             } catch (error) {
                 console.error("প্রোডাক্ট লিস্ট লোড করতে সমস্যা হয়েছে:", error);

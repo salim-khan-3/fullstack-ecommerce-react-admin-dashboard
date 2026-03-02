@@ -1,6 +1,10 @@
+import { useProducts } from "../../../context/hooks/useProducts";
 import TableRow from "../TableRow/TableRow";
+import Loader from "../../Loader/Loader"; // Marvel-style loader import
 
-const ProductTable = ({ products, loading }) => {
+const ProductTable = () => {
+  const { products, loading } = useProducts();
+
   const headers = [
     "UID",
     "PRODUCT",
@@ -13,15 +17,6 @@ const ProductTable = ({ products, loading }) => {
     "SALES",
     "ACTION",
   ];
-
-  if (loading) {
-    return (
-      <div className="bg-white p-10 text-center rounded-b-2xl border border-gray-100 shadow-sm">
-        <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-        <p className="mt-2 text-gray-500 font-medium">Loading products...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-b-2xl shadow-sm border-x border-b border-gray-100 overflow-hidden">
@@ -43,7 +38,14 @@ const ProductTable = ({ products, loading }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {products.length > 0 ? (
+            {/* 🔥 Loader দেখানো */}
+            {loading ? (
+              <tr>
+                <td colSpan={headers.length + 1} className="py-20 text-center">
+                  <Loader />
+                </td>
+              </tr>
+            ) : products.length > 0 ? (
               products.map((product) => (
                 <TableRow key={product._id || product.uid} product={product} />
               ))

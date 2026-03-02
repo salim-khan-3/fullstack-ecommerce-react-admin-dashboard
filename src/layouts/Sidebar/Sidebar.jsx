@@ -75,7 +75,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="h-screen sticky -top-20 bg-white border-r border-gray-200 flex flex-col p-4 w-64">
+    <aside className="sticky top-0 h-screen bg-white border-r border-gray-200 flex flex-col p-4 w-64">
       <div className="flex-1 space-y-1 overflow-y-auto scrollbar-hide">
         {/* Main Menu Items */}
         {menuItems.map((item, index) => (
