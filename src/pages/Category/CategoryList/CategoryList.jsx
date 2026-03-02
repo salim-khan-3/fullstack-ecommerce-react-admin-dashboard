@@ -111,9 +111,7 @@ export default function CategoryList() {
     else setSelected((prev) => [...new Set([...prev, ...ids])]);
   };
 
-  if (loading) {
-    return <Loader></Loader>;
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
@@ -158,26 +156,36 @@ export default function CategoryList() {
               </tr>
             </thead>
             <tbody>
-              {currentData.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-16 text-gray-400">
-                    No categories found.
-                  </td>
-                </tr>
-              ) : (
-                currentData.map((row, idx) => (
-                  <CategoryTableRow
-                    key={row._id}
-                    row={row}
-                    idx={idx}
-                    isSelected={selected.includes(row._id)}
-                    onSelect={toggleSelect}
-                    onEdit={handleEditClick}
-                    onDelete={handleDelete}
-                  />
-                ))
-              )}
-            </tbody>
+  {loading ? (
+   
+    <tr>
+      <td colSpan={8} className="py-20">
+        <div className="flex flex-col items-center justify-center gap-3">
+          <Loader></Loader>
+        </div>
+      </td>
+    </tr>
+  ) : currentData.length === 0 ? (
+    <tr>
+      <td colSpan={8} className="text-center py-16 text-gray-400">
+        No categories found.
+      </td>
+    </tr>
+  ) : (
+  
+    currentData.map((row, idx) => (
+      <CategoryTableRow
+        key={row._id}
+        row={row}
+        idx={idx}
+        isSelected={selected.includes(row._id)}
+        onSelect={toggleSelect}
+        onEdit={handleEditClick}
+        onDelete={handleDelete}
+      />
+    ))
+  )}
+</tbody>
           </table>
         </div>
 
@@ -186,7 +194,7 @@ export default function CategoryList() {
           totalPages={totalPages}
           totalItems={totalItems}
           currentCount={categories.length}
-          onPageChange={handlePageChange} // ৫. নতুন ফাংশন ব্যবহার
+          onPageChange={handlePageChange}
         />
       </div>
     </div>
