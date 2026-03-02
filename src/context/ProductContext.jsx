@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { getAllProducts, getProductsByCategory } from "../api/productApi";
+import { deleteProduct, getAllProducts, getProductsByCategory } from "../api/productApi";
 
 export const ProductContext = createContext();
 
@@ -21,12 +21,26 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+
+   const productDeleteFunc = async (id) => {
+    setLoading(true);
+    try {
+      await deleteProduct(id); // database থেকে delete
+      setProducts((prev) => prev.filter((p) => p._id !== id)); // UI থেকে remove
+    } catch (err) {
+      console.error("Error deleting product:", err);
+      alert("Failed to delete product: " + (err.message || err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, []);
 
   return (
-    <ProductContext.Provider value={{ products, loading ,fetchProducts}}>
+    <ProductContext.Provider value={{ products, loading ,fetchProducts,productDeleteFunc,setProducts}}>
       {children}
     </ProductContext.Provider>
   );

@@ -1,9 +1,10 @@
 
 import TableRow from "../TableRow/TableRow";
 import Loader from "../../Loader/Loader"; // Marvel-style loader import
+import { useProducts } from "../../../context/hooks/useProducts";
 
 const ProductTable = ({products, loading}) => {
-
+const {productDeleteFunc} = useProducts()
 
   const headers = [
     "UID",
@@ -47,7 +48,7 @@ const ProductTable = ({products, loading}) => {
               </tr>
             ) : products.length > 0 ? (
               products.map((product) => (
-                <TableRow key={product._id || product.uid} product={product} />
+                <TableRow key={product._id || product.uid} product={product} onDelete={productDeleteFunc}  />
               ))
             ) : (
               <tr>

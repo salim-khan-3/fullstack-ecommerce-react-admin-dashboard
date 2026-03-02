@@ -1,4 +1,5 @@
 
+import { useEffect } from "react";
 import StatsCards from "../../../components/ProductComponent/StatsCards/StatsCards";
 import ProductTable from "../../../components/Shared/ProductTable/ProductTable";
 import TableFilters from "../../../components/Shared/TableFilters/TableFilters";
@@ -7,6 +8,10 @@ import PageHeader from "../PageHeader/PageHeader";
 
 const Dashboard = () => {
   const { products, loading, fetchProducts } = useProducts();
+
+   useEffect(() => {
+    fetchProducts(); // page load এ সব products fetch হবে
+  }, []);
 
   const handleCategoryChange = (categoryId) => {
     fetchProducts(categoryId); // context থেকে fetch হবে
