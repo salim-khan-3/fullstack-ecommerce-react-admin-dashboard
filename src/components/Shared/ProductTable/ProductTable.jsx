@@ -1,9 +1,9 @@
-import { useProducts } from "../../../context/hooks/useProducts";
+
 import TableRow from "../TableRow/TableRow";
 import Loader from "../../Loader/Loader"; // Marvel-style loader import
 
-const ProductTable = () => {
-  const { products, loading } = useProducts();
+const ProductTable = ({products, loading}) => {
+
 
   const headers = [
     "UID",
