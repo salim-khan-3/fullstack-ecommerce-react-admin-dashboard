@@ -1,46 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InnerImageZoom from "react-inner-image-zoom";
-// আপনার node_modules পাথ অনুযায়ী CSS ইমপোর্ট করুন
-import "react-inner-image-zoom/lib/styles.min.css"; 
+import "react-inner-image-zoom/lib/styles.min.css";
 
-const ProductGallery = () => {
-  const images = [
-    // "https://cdn.pixabay.com/photo/2018/10/23/08/18/sexy-girl-3767278_1280.jpg",
-    // "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9V7UVVW0rFg4yBpDqYabbPrZE4JVN1CBh0ihCcenIxA&s", // এখানে আপনার অন্য ইমেজের লিঙ্ক দিন
-    // "https://cdn.create.vista.com/api/media/small/151878952/stock-photo-beautiful-girl-in-blue-underwear",
-  ];
+const ProductGallery = ({ product }) => {
+  const images = product?.images || [];
+  const [mainImg, setMainImg] = useState("");
 
-  const [mainImg, setMainImg] = useState(images[0]);
+  useEffect(() => {
+    if (images.length > 0) setMainImg(images[0]);
+  }, [images]);
+
+  if (!images.length) {
+    return (
+      <div className="flex items-center justify-center h-64 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200">
+        <div className="text-center">
+          <div className="text-4xl mb-2">🖼️</div>
+          <p className="text-gray-400 text-sm font-medium">No Image Available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Main Image Container */}
-      <div className="group relative border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm transition-all hover:shadow-md">
-        <span className="absolute top-4 left-4 bg-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full z-10 shadow-lg uppercase tracking-wider">
-          10% Off
-        </span>
 
-        <div className="w-full h-[300px] sm:h-[380px] md:h-[450px] flex justify-center p-4">
+      {/* Main Image */}
+      <div className="relative border border-gray-100 rounded-3xl overflow-hidden bg-gradient-to-br from-gray-50 to-white shadow-md hover:shadow-xl transition-all duration-300">
+        {/* Badge */}
+        <div className="absolute top-3 left-3 z-10 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow">
+          Zoom
+        </div>
+
+        <div className="w-full h-[300px] sm:h-[380px] md:h-[460px] flex items-center justify-center p-6">
           <InnerImageZoom
             src={mainImg}
             zoomSrc={mainImg}
             zoomType="hover"
             zoomScale={1.2}
-            className="rounded-xl"
+            className="rounded-2xl max-h-full object-contain"
           />
         </div>
       </div>
 
       {/* Thumbnails */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
         {images.map((img, idx) => (
           <button
             key={idx}
             onClick={() => setMainImg(img)}
-            className={`relative flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all duration-300 overflow-hidden 
-              ${mainImg === img ? "border-blue-600 ring-2 ring-blue-50" : "border-gray-100 hover:border-gray-300"}`}
+            className={`relative flex-shrink-0 w-20 h-20 rounded-2xl border-2 overflow-hidden transition-all duration-200
+              ${mainImg === img
+                ? "border-blue-600 ring-4 ring-blue-100 scale-105 shadow-md"
+                : "border-gray-100 hover:border-blue-300 hover:scale-105 hover:shadow-sm"
+              }`}
           >
-            <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+            <img src={img} alt={`Thumbnail-${idx}`} className="w-full h-full object-cover" />
+            {mainImg === img && (
+              <div className="absolute inset-0 bg-blue-600/10 rounded-2xl" />
+            )}
           </button>
         ))}
       </div>

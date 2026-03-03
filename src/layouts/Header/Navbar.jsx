@@ -1,175 +1,185 @@
-import React, { useContext, useState } from "react";
+// Navbar.jsx
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { MyContext } from "../../App";
-import {
-  Search,
-  Sun,
-  ShoppingCart,
-  Mail,
-  Bell,
-  Menu,
-  ChevronDown,
-} from "lucide-react";
+import { Search, Sun, Bell, Menu, X, ChevronDown, LogOut, Settings, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const { isToggleSidebar, themeMode, setThemeMode,setIsToggleSidebar, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { isToggleSidebar, themeMode, setThemeMode, setIsToggleSidebar, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
- 
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
 
-  // Dummy notification data based on your screenshot
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setIsNotificationOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) setIsProfileOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const notifications = [
-    {
-      id: 1,
-      name: "Mahmudul",
-      action: "added to his favorite list",
-      item: "Leather belt steve madden",
-      time: "few seconds ago",
-    },
-    {
-      id: 2,
-      name: "Mahmudul",
-      action: "added to his favorite list",
-      item: "Leather belt steve madden",
-      time: "few seconds ago",
-    },
-    {
-      id: 3,
-      name: "Mahmudul",
-      action: "added to his favorite list",
-      item: "Leather belt steve madden",
-      time: "few seconds ago",
-    },
-    {
-      id: 4,
-      name: "Mahmudul",
-      action: "added to his favorite list",
-      item: "Leather belt steve madden",
-      time: "few seconds ago",
-    },
+    { id: 1, name: "Mahmudul", action: "added to his favorite list", item: "Leather belt steve madden", time: "2 min ago", unread: true },
+    { id: 2, name: "Rakib Hasan", action: "placed a new order for", item: "Nike Air Max 2024", time: "15 min ago", unread: true },
+    { id: 3, name: "Sumaiya Akter", action: "left a review on", item: "Samsung Galaxy S24", time: "1 hour ago", unread: false },
+    { id: 4, name: "Tanvir Ahmed", action: "added to his favorite list", item: "Sony WH-1000XM5", time: "3 hours ago", unread: false },
   ];
 
-  return (
-    <nav className="bg-white border-b border-gray-100 px-4 py-2 flex items-center justify-between sticky top-0 z-50">
-      {/* Left Section: Logo & Toggle */}
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <div className="bg-blue-600 p-1.5 rounded-lg">
-            <div className="w-5 h-5 border-2 border-white rounded-sm flex items-center justify-center text-white font-bold text-xs">
-              H
-            </div>
-          </div>
-          <span className="font-bold text-xl tracking-tight text-gray-800">
-            HOTASH
-          </span>
-        </div>
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
+  return (
+    <nav className="bg-white/90 backdrop-blur-md border-b border-gray-100/80 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+
+      {/* Left: Logo + Toggle */}
+      <div className="flex items-center gap-3">
         <button
-          className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 md:block"
           onClick={() => setIsToggleSidebar(!isToggleSidebar)}
+          className="p-2 hover:bg-gray-100 rounded-xl text-gray-500 transition-all active:scale-95"
         >
           <Menu size={20} />
         </button>
+
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-blue-200 transition-all">
+            <span className="text-white font-black text-sm">H</span>
+          </div>
+          <span className="font-black text-lg tracking-tight text-gray-800 hidden sm:block">
+            HOT<span className="text-blue-600">ASH</span>
+          </span>
+        </Link>
       </div>
 
-      {/* Middle Section: Search Bar */}
-      <div className="flex-1 max-w-md mx-4 hidden sm:block">
-        <div className="relative">
-          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-            <Search size={18} />
-          </span>
+      {/* Middle: Search */}
+      <div className={`flex-1 max-w-sm mx-4 hidden sm:block transition-all duration-300 ${searchFocused ? "max-w-md" : ""}`}>
+        <div className={`relative flex items-center rounded-2xl border-2 transition-all duration-200 ${searchFocused ? "border-blue-400 bg-white shadow-sm shadow-blue-100" : "border-transparent bg-gray-100"}`}>
+          <Search size={16} className={`absolute left-3 transition-colors ${searchFocused ? "text-blue-500" : "text-gray-400"}`} />
           <input
             type="text"
-            className="block w-full pl-10 pr-3 py-2 border-none bg-blue-50/50 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-            placeholder="Search here..."
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            className="w-full pl-9 pr-4 py-2.5 bg-transparent text-sm placeholder-gray-400 outline-none text-gray-700"
+            placeholder="Search products, orders..."
           />
+          <kbd className={`absolute right-3 text-[10px] px-1.5 py-0.5 rounded-md font-mono transition-all ${searchFocused ? "hidden" : "text-gray-400 bg-gray-200"}`}>
+            ⌘K
+          </kbd>
         </div>
       </div>
 
-      {/* Right Section: Actions & Profile */}
-      <div className="flex items-center space-x-1 md:space-x-3">
-        {/* Action Icons */}
-        <div className="flex items-center space-x-1 sm:space-x-2 border-r pr-3 mr-2 border-gray-100">
-          <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-            <Sun size={20} />
-          </button>
-          {/* <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-            <ShoppingCart size={20} />
-          </button>
-          <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-            <Mail size={20} />
-          </button> */}
+      {/* Right: Actions */}
+      <div className="flex items-center gap-1 md:gap-2">
 
-          {/* Notification Button & Dropdown */}
-          <div className="relative">
+        {/* Theme Toggle */}
+        <button
+          onClick={() => setThemeMode && setThemeMode(themeMode === "dark" ? "light" : "dark")}
+          className="p-2.5 text-gray-500 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all"
+        >
+          <Sun size={18} />
+        </button>
+
+        {/* Notifications */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => { setIsNotificationOpen(!isNotificationOpen); setIsProfileOpen(false); }}
+            className={`relative p-2.5 rounded-xl transition-all ${isNotificationOpen ? "bg-blue-50 text-blue-600" : "text-gray-500 hover:bg-gray-100"}`}
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {isNotificationOpen && (
+            <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+              <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
+                  <p className="text-xs text-gray-400">{unreadCount} unread messages</p>
+                </div>
+                <button onClick={() => setIsNotificationOpen(false)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400">
+                  <X size={14} />
+                </button>
+              </div>
+
+              <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                {notifications.map((notif) => (
+                  <div key={notif.id} className={`flex items-start gap-3 p-4 hover:bg-gray-50 cursor-pointer transition-colors ${notif.unread ? "bg-blue-50/30" : ""}`}>
+                    <div className="relative flex-shrink-0">
+                      <img src={`https://i.pravatar.cc/150?u=${notif.id}`} alt="" className="w-9 h-9 rounded-xl object-cover" />
+                      {notif.unread && (
+                        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        <span className="font-bold text-gray-800">{notif.name}</span> {notif.action}{" "}
+                        <span className="font-semibold text-gray-700">"{notif.item}"</span>
+                      </p>
+                      <p className="text-[10px] text-blue-500 font-medium mt-1">{notif.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-3 border-t border-gray-50">
+                <button className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-200 active:scale-[0.98]">
+                  View All Notifications
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-gray-200 mx-1 hidden sm:block" />
+
+        {/* Profile */}
+        {isLoggedIn ? (
+          <div className="relative" ref={profileRef}>
             <button
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-              className={`p-2 rounded-full transition-colors ${isNotificationOpen ? "bg-blue-50 text-blue-600" : "text-gray-500 hover:bg-gray-100"}`}
+              onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotificationOpen(false); }}
+              className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl transition-all group"
             >
-              <Bell size={20} />
+              <img src="https://i.pravatar.cc/150?u=rinku" alt="Profile" className="w-8 h-8 rounded-xl object-cover border-2 border-gray-100" />
+              <div className="hidden lg:block text-left">
+                <p className="text-xs font-bold text-gray-800 leading-tight">Rinku Verma</p>
+                <p className="text-[10px] text-gray-400">Admin</p>
+              </div>
+              <ChevronDown size={14} className={`text-gray-400 hidden lg:block transition-transform duration-200 ${isProfileOpen ? "rotate-180" : ""}`} />
             </button>
 
-            {isNotificationOpen && (
-              <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="p-4 border-b border-gray-50">
-                  <h3 className="font-semibold text-gray-700">Orders (12)</h3>
+            {isProfileOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+                <div className="p-3 border-b border-gray-50">
+                  <p className="text-xs font-bold text-gray-800">Rinku Verma</p>
+                  <p className="text-[10px] text-gray-400">@Rinkuv37</p>
                 </div>
-
-                <div className="max-h-96 overflow-y-auto">
-                  {notifications.map((notif, index) => (
-                    <div
-                      key={index}
-                      className="flex items-start p-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                    >
-                      <img
-                        src="https://i.pravatar.cc/150?u=rinku"
-                        alt="User"
-                        className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-600">
-                          <span className="font-bold text-gray-900">
-                            {notif.name}
-                          </span>{" "}
-                          {notif.action}
-                          <span className="block font-semibold text-gray-800">
-                            {notif.item}
-                          </span>
-                        </p>
-                        <p className="text-xs text-blue-500 mt-1">
-                          {notif.time}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="p-3 bg-white">
-                  <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
-                    View All Notifications
+                <div className="p-2">
+                  <Link to="/profile" className="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 hover:text-blue-600 rounded-xl transition-colors font-medium">
+                    <User size={14} /> My Profile
+                  </Link>
+                  <Link to="/settings" className="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 hover:text-blue-600 rounded-xl transition-colors font-medium">
+                    <Settings size={14} /> Settings
+                  </Link>
+                  <button
+                    onClick={() => setIsLoggedIn(false)}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-500 hover:bg-red-50 rounded-xl transition-colors font-medium"
+                  >
+                    <LogOut size={14} /> Logout
                   </button>
                 </div>
               </div>
             )}
           </div>
-        </div>
-
-        {/* User Profile */}
-        {isLoggedIn ? (
-          <div className="flex items-center space-x-2 cursor-pointer group">
-            <img
-              src="https://i.pravatar.cc/150?u=rinku"
-              alt="Rinku Verma"
-              className="w-9 h-9 rounded-full border border-gray-200"
-            />
-            <div className="hidden lg:block leading-tight">
-              <p className="text-sm font-bold text-gray-800">Rinku Verma</p>
-              <p className="text-[11px] text-gray-500">@Rinkuv37</p>
-            </div>
-          </div>
         ) : (
-          <Link to="/login"
-            onClick={() => setIsLoggedIn(isLoggedIn)} // dummy login toggle
-            className="py-1.5 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          <Link
+            to="/login"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-bold hover:shadow-md hover:shadow-blue-200 transition-all active:scale-95"
           >
             Sign In
           </Link>

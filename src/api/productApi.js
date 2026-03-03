@@ -54,7 +54,7 @@ export const updateProduct = async (id, formData) => {
 // ৫. নির্দিষ্ট আইডি দিয়ে একটি প্রোডাক্ট গেট করা
 export const getProductById = async (id) => {
     try {
-        const response = await axiosInstance.get(`/product/details/${id}`);
+        const response = await axiosInstance.get(`/products/${id}`);
         return response.data;
     } catch (error) {
         throw error.response ? error.response.data : error.message;

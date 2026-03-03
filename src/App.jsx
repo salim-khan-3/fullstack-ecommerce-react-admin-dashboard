@@ -15,6 +15,7 @@ import CategoryList from "./pages/Category/CategoryList/CategoryList";
 import EditCategory from "./pages/Category/Editcategory/Editcategory";
 import ProductList from "./pages/Products/ProductList/ProductList";
 import { ProductProvider } from "./context/ProductContext";
+import ProductUpdate from "./pages/Products/ProductUpdate/ProductUpdate";
 
 export const MyContext = createContext();
 
@@ -95,6 +96,7 @@ function App() {
                     element={<ProductDetails />}
                   />
                   <Route path="/product/upload" element={<ProductUpload />} />
+                  <Route path="/product/update" element={<ProductUpdate />} />
                   <Route path="/category/add" element={<CategoryForm />} />
                   <Route path="/category/list" element={<CategoryList />} />
                   <Route

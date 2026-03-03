@@ -1,55 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import ProductGallery from './ProductGallery';
-import ProductInfo from './ProductInfo';
-import ReviewSection from './ReviewSection';
-import Loader from '../../../components/Loader/Loader';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+import Loader from "../../../components/Loader/Loader";
+import ProductGallery from "./ProductGallery";
+import ProductInfo from "./ProductInfo";
+import ReviewSection from "./ReviewSection";
 import { getProductById } from "../../../api/productApi";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-
+console.log(product);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
         const data = await getProductById(id);
-        console.log("Fetched Product Data:", data); // এখানে ডাটা আসছে কি না চেক করুন
-        setProduct(data);
+        setProduct(data.data || data);
       } catch (error) {
-        console.error("Error fetching product details:", error);
+        console.error("Error fetching product:", error);
       } finally {
         setLoading(false);
       }
     };
+
     if (id) fetchProduct();
   }, [id]);
 
   if (loading) return <Loader />;
-  if (!product) return <div className="p-10 text-center text-red-500 font-bold">Product not found in database!</div>;
+
+  if (!product)
+    return (
+      <div className="text-center text-red-500 font-bold p-10">
+        Product not found!
+      </div>
+    );
 
   return (
-    <div className="bg-gray-100 px-3 sm:px-4 md:px-8 py-4 md:py-8">
-      {/* Top Bar omitted for brevity */}
-
-      <div className="w-full max-w-7xl mx-auto bg-white p-4 sm:p-6 md:p-10 rounded-lg shadow-sm border border-gray-100">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-          {/* এইখানে প্রপস পাস করা খুবই জরুরি */}
-          <ProductGallery images={product.images || [product.image]} />
-          <ProductInfo product={product} />
-        </div>
-
-        {/* যদি আপনার স্কিমাতে reviews থাকে */}
-        <ReviewSection reviews={product.reviews || []} />
+    <div className="p-6 bg-white rounded shadow">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <ProductGallery product={product} />
+        <ProductInfo product={product} />
       </div>
+
+      <ReviewSection reviews={product.reviews || []} />
     </div>
   );
 };
 
 export default ProductDetails;
-
 
 
 // import React, { useEffect, useState } from 'react';

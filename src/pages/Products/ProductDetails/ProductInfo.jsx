@@ -1,46 +1,101 @@
-import React from 'react';
-import { Tag, Grid, Maximize, Star, Calendar } from 'lucide-react';
+import React from "react";
+import { Tag, Grid, Maximize, Star, Calendar } from "lucide-react";
 
-const ProductInfo = () => {
+const InfoRow = ({ icon, label, children }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+    <span className="flex items-center gap-2 min-w-[110px] text-gray-500 text-xs font-bold uppercase tracking-wider">
+      {icon}
+      {label}
+    </span>
+    <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+      <span className="text-gray-300 hidden sm:inline">│</span>
+      {children}
+    </div>
+  </div>
+);
+
+const ProductInfo = ({ product }) => {
+  if (!product) return null;
+
+  const sizes = product.sizes || ["S", "M", "L", "XL", "XS"];
+  const publishedDate = product.dateCreated
+    ? new Date(product.dateCreated).toLocaleDateString()
+    : "N/A";
+  const reviewCount = product.numReviews || 0;
+  const rating = product.rating || 0;
+
   return (
     <div className="space-y-6">
-      <div className="border-b pb-4">
-        <h2 className="text-gray-500 font-semibold mb-4">Product Details</h2>
-        <h1 className="text-xl font-bold text-gray-800">Glito Black Solid Dry-Fit Regular Fit Sports Wear Jacket/Upper For Men</h1>
-      </div>
 
-      <div className="space-y-3 text-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
-          <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Tag size={16}/> Brand</span>
-          <span className="text-gray-500">: &nbsp; V-Mart</span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
-          <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Grid size={16}/> Category</span>
-          <span className="text-gray-500">: &nbsp; Fashion</span>
-        </div>
-        <div cclassName="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
-          <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Maximize size={16}/> SIZE</span>
-          <div className="flex gap-2 items-center">
-             <span>:</span>
-             {['S', 'M', 'L', 'XL', 'XS'].map(size => (
-               <button key={size} className="bg-gray-200 px-2 py-0.5 rounded text-[10px] hover:bg-blue-500 hover:text-white transition uppercase font-bold text-gray-600">{size}</button>
-             ))}
+      {/* Header */}
+      <div>
+        <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+          Product Details
+        </span>
+        <h1 className="text-2xl font-extrabold text-gray-900 leading-snug line-clamp-2">
+          {product.name}
+        </h1>
+
+        {/* Star Rating Row */}
+        <div className="flex items-center gap-2 mt-3">
+          <div className="flex">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={15}
+                className={i < Math.round(rating) ? "fill-amber-400 text-amber-400" : "text-gray-200 fill-gray-200"}
+              />
+            ))}
           </div>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
-          <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Star size={16}/> Review</span>
-          <span className="text-gray-500">: &nbsp; (4) Review</span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
-          <span className="flex items-center gap-2 w-24 text-gray-600 font-medium"><Calendar size={16}/> Published</span>
-          <span className="text-gray-500">: &nbsp; 2024-09-17T02:35:38.759Z</span>
+          <span className="text-xs text-gray-400 font-medium">({reviewCount} reviews)</span>
         </div>
       </div>
 
-      <div className="pt-6 border-t">
-        <h3 className="text-gray-700 font-bold mb-2">Product Description</h3>
-        <p className="text-sm text-gray-500 leading-relaxed">
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+      {/* Info Card */}
+      <div className="bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-4">
+        <InfoRow icon={<Tag size={13} />} label="Brand">
+          <span className="bg-white border border-gray-200 text-gray-700 px-3 py-0.5 rounded-lg text-xs font-bold shadow-sm">
+            {product.brand || "N/A"}
+          </span>
+        </InfoRow>
+
+        <div className="h-px bg-gray-200" />
+
+        <InfoRow icon={<Grid size={13} />} label="Category">
+          <span className="bg-indigo-50 text-indigo-600 px-3 py-0.5 rounded-lg text-xs font-bold">
+            {product.category?.name || "N/A"}
+          </span>
+        </InfoRow>
+
+        <div className="h-px bg-gray-200" />
+
+        <InfoRow icon={<Maximize size={13} />} label="Size">
+          <div className="flex flex-wrap gap-1.5">
+            {sizes.map((size) => (
+              <button
+                key={size}
+                className="bg-white border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 text-gray-600 px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold uppercase transition-all"
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </InfoRow>
+
+        <div className="h-px bg-gray-200" />
+
+        <InfoRow icon={<Calendar size={13} />} label="Published">
+          <span className="text-gray-500 text-xs">{publishedDate}</span>
+        </InfoRow>
+      </div>
+
+      {/* Description */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+          Description
+        </h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          {product.description || "No description available."}
         </p>
       </div>
     </div>
