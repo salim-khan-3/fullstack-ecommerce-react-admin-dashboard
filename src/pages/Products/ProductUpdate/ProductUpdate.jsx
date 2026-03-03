@@ -1,81 +1,76 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   CloudLightning, Plus, Info, Upload, X, Home,
   ChevronRight, Package, Tag, DollarSign, MapPin, Layers, RefreshCw
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { getAllCategories } from "../../../api/categoryApi";
-import { updateProduct } from "../../../api/productApi"; // আপনার API অনুযায়ী
+import { updateProduct, getProductById } from "../../../api/productApi";
 
-const ProductUpdate = ({ product }) => {  // product prop হিসেবে আসবে
+const ProductUpdate = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedImages, setSelectedImages] = useState([]);       // নতুন ছবি
-  const [previews, setPreviews] = useState([]);                   // নতুন ছবির preview
-  const [existingImages, setExistingImages] = useState([]);       // DB তে থাকা পুরোনো ছবি
+  const [fetching, setFetching] = useState(true);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    reset,
-  } = useForm({
-    defaultValues: {
-      rating: 0,
-      location: "dhaka",
-    },
+  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm({
+    defaultValues: { rating: 0, location: "dhaka" },
   });
 
   const currentRating = watch("rating");
 
-  // ── Categories লোড ──
+  // Categories + Product data একসাথে লোড
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchAll = async () => {
       try {
-        const res = await getAllCategories(1, 100);
-        setCategories(res?.categoryList || res?.data || []);
+        const [catRes, product] = await Promise.all([
+          getAllCategories(1, 100),
+          getProductById(id),
+        ]);
+
+        setCategories(catRes?.categoryList || catRes?.data || []);
+
+        // Form pre-fill
+        reset({
+          name: product.name || "",
+          description: product.description || "",
+          category: product.category?._id || product.category || "",
+          brand: product.brand || "",
+          price: product.price || "",
+          countInStock: product.countInStock || "",
+          rating: product.rating || 0,
+          location: product.location || "dhaka",
+        });
+
+        setExistingImages(product.images || []);
       } catch (err) {
-        console.error("Error loading categories:", err);
+        console.error("Error loading data:", err);
+      } finally {
+        setFetching(false);
       }
     };
-    fetchCategories();
-  }, []);
 
-  // ── Product data দিয়ে form pre-fill ──
-  useEffect(() => {
-    if (product) {
-      reset({
-        name: product.name || "",
-        description: product.description || "",
-        category: product.category?._id || product.category || "",
-        brand: product.brand || "",
-        price: product.price || "",
-        countInStock: product.countInStock || "",
-        rating: product.rating || 0,
-        location: product.location || "dhaka",
-      });
-      setExistingImages(product.images || []);
-    }
-  }, [product, reset]);
+    fetchAll();
+  }, [id]);
 
-  // ── নতুন ছবি add ──
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setSelectedImages((prev) => [...prev, ...files]);
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setPreviews((prev) => [...prev, ...newPreviews]);
+    setPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
   };
 
-  // ── নতুন ছবি remove ──
   const removeNewImage = (index) => {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
     setPreviews(previews.filter((_, i) => i !== index));
   };
 
-  // ── পুরোনো ছবি remove ──
   const removeExistingImage = (index) => {
     setExistingImages(existingImages.filter((_, i) => i !== index));
   };
@@ -92,42 +87,34 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
 
     Swal.fire({
       title: "Updating Product...",
-      text: "Please wait while we update your product.",
+      text: "Please wait...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
 
     setLoading(true);
     const formData = new FormData();
-
-    // সব field append
     Object.keys(data).forEach((key) => formData.append(key, data[key]));
-
-    // পুরোনো ছবিগুলো (যেগুলো রাখা হয়েছে)
     existingImages.forEach((img) => formData.append("existingImages", img));
-
-    // নতুন ছবিগুলো
     selectedImages.forEach((image) => formData.append("images", image));
 
     try {
-      await updateProduct(product._id, formData); // আপনার API অনুযায়ী
+      await updateProduct(id, formData);
 
       Swal.fire({
         icon: "success",
         title: "Updated!",
-        text: "Product Updated Successfully! ✅",
-        timer: 3000,
+        text: "Product updated successfully! ✅",
+        timer: 2500,
         showConfirmButton: false,
       });
 
-      setSelectedImages([]);
-      setPreviews([]);
+      setTimeout(() => navigate("/products/list"), 2500);
     } catch (err) {
-      console.error("Update Error:", err);
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: err.message || "Something went wrong during update.",
+        text: err.message || "Something went wrong.",
         confirmButtonColor: "#ef4444",
       });
     } finally {
@@ -135,11 +122,26 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
     }
   };
 
-  return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4font-sans">
-      <form onSubmit={handleSubmit(onSubmit)} className=" mx-auto space-y-6">
+  // Loading state
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-3">
+          <svg className="animate-spin h-10 w-10 text-emerald-500" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+          </svg>
+          <p className="text-gray-400 text-sm font-medium">Loading product data...</p>
+        </div>
+      </div>
+    );
+  }
 
-        {/* ── Breadcrumb Header ── */}
+  return (
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 font-sans">
+      <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-6">
+
+        {/* Breadcrumb */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-white shadow-sm px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
@@ -155,19 +157,15 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
               <Home size={12} /><span>Dashboard</span>
             </div>
             <ChevronRight size={12} className="text-gray-300" />
-            <div className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all text-gray-500">
-              Products
-            </div>
+            <div className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all text-gray-500">Products</div>
             <ChevronRight size={12} className="text-gray-300" />
-            <div className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm">
-              Product Update
-            </div>
+            <div className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold shadow-sm">Product Update</div>
           </nav>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* ── Left Column ── */}
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
 
             {/* Basic Info */}
@@ -178,11 +176,8 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
               </div>
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                {/* Product Name */}
                 <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
-                    Product Name
-                  </label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Product Name</label>
                   <input
                     {...register("name", { required: "Name is required" })}
                     placeholder="Ex: iPhone 15 Pro Max"
@@ -191,11 +186,8 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
                   {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
                 </div>
 
-                {/* Description */}
                 <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
-                    Description
-                  </label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Description</label>
                   <textarea
                     rows="4"
                     {...register("description", { required: true })}
@@ -204,15 +196,9 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
                   />
                 </div>
 
-                {/* Category */}
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <Layers size={11} /> Category
-                  </label>
-                  <select
-                    {...register("category", { required: true })}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-600"
-                  >
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Layers size={11} /> Category</label>
+                  <select {...register("category", { required: true })} className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-600">
                     <option value="">Select Category</option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat._id}>{cat.name}</option>
@@ -220,45 +206,22 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
                   </select>
                 </div>
 
-                {/* Brand */}
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <Tag size={11} /> Brand Name
-                  </label>
-                  <input
-                    {...register("brand", { required: true })}
-                    placeholder="Ex: Apple, Samsung"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm placeholder-gray-300"
-                  />
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Tag size={11} /> Brand Name</label>
+                  <input {...register("brand", { required: true })} placeholder="Ex: Apple, Samsung" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm placeholder-gray-300" />
                 </div>
 
-                {/* Price */}
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <DollarSign size={11} /> Price
-                  </label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><DollarSign size={11} /> Price</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">$</span>
-                    <input
-                      type="number"
-                      {...register("price", { required: true })}
-                      placeholder="0.00"
-                      className="w-full pl-8 pr-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm placeholder-gray-300"
-                    />
+                    <input type="number" {...register("price", { required: true })} placeholder="0.00" className="w-full pl-8 pr-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm placeholder-gray-300" />
                   </div>
                 </div>
 
-                {/* Stock */}
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <Package size={11} /> Stock Count
-                  </label>
-                  <input
-                    type="number"
-                    {...register("countInStock", { required: true })}
-                    placeholder="0"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm placeholder-gray-300"
-                  />
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Package size={11} /> Stock Count</label>
+                  <input type="number" {...register("countInStock", { required: true })} placeholder="0" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm placeholder-gray-300" />
                 </div>
               </div>
             </div>
@@ -270,69 +233,49 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
                 <h2 className="text-white font-bold text-base">Media & Publishing</h2>
               </div>
               <div className="p-6">
-                <p className="text-xs text-gray-400 mb-4 font-medium">
-                  Existing images are shown below. Remove or add new ones.
-                </p>
+                <p className="text-xs text-gray-400 mb-4 font-medium">Existing images shown below. Remove or add new ones.</p>
                 <div className="flex flex-wrap gap-3">
 
-                  {/* পুরোনো ছবি */}
                   {existingImages.map((url, index) => (
                     <div key={`existing-${index}`} className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-emerald-200 shadow-sm group">
                       <img src={url} alt="existing" className="w-full h-full object-cover" />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-emerald-700/80 to-transparent py-1 text-center">
-                        <span className="text-white text-[9px] font-bold uppercase tracking-wider">
-                          {index === 0 ? "Cover" : "Saved"}
-                        </span>
+                        <span className="text-white text-[9px] font-bold uppercase tracking-wider">{index === 0 ? "Cover" : "Saved"}</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeExistingImage(index)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md hover:bg-red-600"
-                      >
+                      <button type="button" onClick={() => removeExistingImage(index)} className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md hover:bg-red-600">
                         <X size={12} />
                       </button>
                     </div>
                   ))}
 
-                  {/* নতুন ছবি preview */}
                   {previews.map((url, index) => (
                     <div key={`new-${index}`} className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-blue-300 shadow-sm group">
-                      <img src={url} alt="new preview" className="w-full h-full object-cover" />
+                      <img src={url} alt="new" className="w-full h-full object-cover" />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-700/80 to-transparent py-1 text-center">
                         <span className="text-white text-[9px] font-bold uppercase tracking-wider">New</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeNewImage(index)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md hover:bg-red-600"
-                      >
+                      <button type="button" onClick={() => removeNewImage(index)} className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md hover:bg-red-600">
                         <X size={12} />
                       </button>
                     </div>
                   ))}
 
-                  {/* Add Image Button */}
                   <label className="w-28 h-28 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-gray-400 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-500 cursor-pointer transition-all group">
                     <div className="w-8 h-8 bg-gray-100 group-hover:bg-blue-100 rounded-xl flex items-center justify-center mb-1 transition-all">
                       <Plus size={18} />
                     </div>
-                    <span className="text-[9px] uppercase font-bold tracking-wider text-center px-2 leading-tight">
-                      Add New
-                    </span>
+                    <span className="text-[9px] uppercase font-bold tracking-wider text-center px-2 leading-tight">Add New</span>
                     <input type="file" multiple className="hidden" onChange={handleImageChange} accept="image/*" />
                   </label>
                 </div>
-
                 {existingImages.length === 0 && selectedImages.length === 0 && (
-                  <p className="text-xs text-amber-500 mt-3 font-medium">
-                    ⚠ At least one image is required.
-                  </p>
+                  <p className="text-xs text-amber-500 mt-3 font-medium">⚠ At least one image is required.</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* ── Right Column ── */}
+          {/* Right Column */}
           <div className="space-y-6">
 
             {/* Rating */}
@@ -346,12 +289,7 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
               <div className="p-6 flex flex-col items-center gap-3">
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setValue("rating", star)}
-                      className="transition-transform hover:scale-110 active:scale-95"
-                    >
+                    <button key={star} type="button" onClick={() => setValue("rating", star)} className="transition-transform hover:scale-110 active:scale-95">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={star <= currentRating ? "#f59e0b" : "none"} stroke={star <= currentRating ? "#f59e0b" : "#d1d5db"} className="w-9 h-9 cursor-pointer">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.07 6.323a1 1 0 00.95.69h6.646c.969 0 1.371 1.24.588 1.81l-5.378 3.903a1 1 0 00-.364 1.118l2.07 6.323c.3.921-.755 1.688-1.54 1.118l-5.378-3.903a1 1 0 00-1.175 0l-5.378 3.903c-.785.57-1.838-.197-1.539-1.118l2.07-6.323a1 1 0 00-.364-1.118L2.245 11.75c-.783-.57-.38-1.81.588-1.81h6.646a1 1 0 00.95-.69l2.07-6.323z" />
                       </svg>
@@ -373,10 +311,7 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
                 <h2 className="text-white font-bold text-base">Shipping Location</h2>
               </div>
               <div className="p-6">
-                <select
-                  {...register("location")}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-emerald-400 focus:bg-white transition-all text-sm text-gray-600"
-                >
+                <select {...register("location")} className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-emerald-400 focus:bg-white transition-all text-sm text-gray-600">
                   <option value="dhaka">📍 Dhaka</option>
                   <option value="chattogram">📍 Chattogram</option>
                 </select>
@@ -386,15 +321,11 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
 
             {/* Update Summary */}
             <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-6 shadow-lg text-white">
-              <h3 className="font-bold text-xs mb-4 text-emerald-200 uppercase tracking-widest">
-                Update Summary
-              </h3>
+              <h3 className="font-bold text-xs mb-4 text-emerald-200 uppercase tracking-widest">Update Summary</h3>
               <div className="space-y-3 mb-5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-emerald-200">Existing Images</span>
-                  <span className="font-bold bg-white/10 px-2.5 py-0.5 rounded-lg text-xs">
-                    {existingImages.length} saved
-                  </span>
+                  <span className="font-bold bg-white/10 px-2.5 py-0.5 rounded-lg text-xs">{existingImages.length} saved</span>
                 </div>
                 <div className="w-full h-px bg-white/10" />
                 <div className="flex items-center justify-between text-sm">
@@ -409,29 +340,21 @@ const ProductUpdate = ({ product }) => {  // product prop হিসেবে আ
                   <span className="font-bold text-amber-300">{currentRating || 0} / 5 ⭐</span>
                 </div>
               </div>
-
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg ${
-                  loading
-                    ? "bg-white/20 cursor-not-allowed text-white/60"
-                    : "bg-white text-emerald-700 hover:bg-emerald-50"
-                }`}
+                className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg ${loading ? "bg-white/20 cursor-not-allowed text-white/60" : "bg-white text-emerald-700 hover:bg-emerald-50"}`}
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                     </svg>
                     UPDATING...
                   </span>
                 ) : (
-                  <>
-                    <CloudLightning size={18} fill="currentColor" />
-                    UPDATE PRODUCT
-                  </>
+                  <><CloudLightning size={18} fill="currentColor" /> UPDATE PRODUCT</>
                 )}
               </button>
             </div>

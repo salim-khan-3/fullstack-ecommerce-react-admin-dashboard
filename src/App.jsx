@@ -96,7 +96,7 @@ function App() {
                     element={<ProductDetails />}
                   />
                   <Route path="/product/upload" element={<ProductUpload />} />
-                  <Route path="/product/update" element={<ProductUpdate />} />
+                  <Route path="/product/update/:id" element={<ProductUpdate />} />
                   <Route path="/category/add" element={<CategoryForm />} />
                   <Route path="/category/list" element={<CategoryList />} />
                   <Route
