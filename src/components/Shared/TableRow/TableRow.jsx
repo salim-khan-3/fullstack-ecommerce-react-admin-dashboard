@@ -11,15 +11,15 @@ const TableRow = ({ product }) => {
   console.log(product);
 
   // এইভাবে করো
-const categoryName =
-  product.category && typeof product.category === "object"
-    ? product.category.name
-    : product.category || "N/A";
+  const categoryName =
+    product.category && typeof product.category === "object"
+      ? product.category.name
+      : product.category || "N/A";
 
-const brandName =
-  product.brand && typeof product.brand === "object"
-    ? product.brand.name
-    : product.brand || "N/A";
+  const brandName =
+    product.brand && typeof product.brand === "object"
+      ? product.brand.name
+      : product.brand || "N/A";
 
   // const categoryName =
   //   typeof product.category === "object"
@@ -106,6 +106,9 @@ const brandName =
         {categoryName}
       </td>
       <td className="py-4 px-4 text-sm text-gray-500 capitalize">
+        {product.subCat?.subCat || "N/A"}
+      </td>
+      <td className="py-4 px-4 text-sm text-gray-500 capitalize">
         {brandName}
       </td>
 
@@ -119,7 +122,7 @@ const brandName =
       </td>
 
       <td className="py-4 px-4 text-sm text-gray-600 font-medium">
-        {product.stock || 0}
+        {product.countInStock || 0}
       </td>
 
       <td className="py-4 px-4">
@@ -144,7 +147,10 @@ const brandName =
             </button>
           </Link>
 
-          <Link to={`/product/update/${product._id}`} className="cursor-pointer">
+          <Link
+            to={`/product/update/${product._id}`}
+            className="cursor-pointer"
+          >
             <button className="p-1.5 cursor-pointer bg-green-50 text-green-600 rounded-lg hover:bg-green-100">
               <Edit2 size={16} />
             </button>

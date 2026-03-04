@@ -15,6 +15,7 @@ const InfoRow = ({ icon, label, children }) => (
 );
 
 const ProductInfo = ({ product }) => {
+  // console.log(product.subCat.subCat);
   if (!product) return null;
 
   const sizes = product.sizes || ["S", "M", "L", "XL", "XS"];
@@ -23,10 +24,12 @@ const ProductInfo = ({ product }) => {
     : "N/A";
   const reviewCount = product.numReviews || 0;
   const rating = product.rating || 0;
-
+  const subCatName =
+    product.subCat && typeof product.subCat === "object"
+      ? product.subCat.subCat
+      : "N/A";
   return (
     <div className="space-y-6">
-
       {/* Header */}
       <div>
         <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
@@ -43,11 +46,17 @@ const ProductInfo = ({ product }) => {
               <Star
                 key={i}
                 size={15}
-                className={i < Math.round(rating) ? "fill-amber-400 text-amber-400" : "text-gray-200 fill-gray-200"}
+                className={
+                  i < Math.round(rating)
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-gray-200 fill-gray-200"
+                }
               />
             ))}
           </div>
-          <span className="text-xs text-gray-400 font-medium">({reviewCount} reviews)</span>
+          <span className="text-xs text-gray-400 font-medium">
+            ({reviewCount} reviews)
+          </span>
         </div>
       </div>
 
@@ -64,6 +73,13 @@ const ProductInfo = ({ product }) => {
         <InfoRow icon={<Grid size={13} />} label="Category">
           <span className="bg-indigo-50 text-indigo-600 px-3 py-0.5 rounded-lg text-xs font-bold">
             {product.category?.name || "N/A"}
+          </span>
+        </InfoRow>
+
+        <div className="h-px bg-gray-200" />
+        <InfoRow icon={<Grid size={13} />} label="Sub Category">
+          <span className="bg-purple-50 text-purple-600 px-3 py-0.5 rounded-lg text-xs font-bold">
+            {subCatName}
           </span>
         </InfoRow>
 

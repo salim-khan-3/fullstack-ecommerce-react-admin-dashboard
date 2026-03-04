@@ -1,15 +1,13 @@
 import axiosInstance from "./axiosInstance";
 
-// ১. সব প্রোডাক্ট গেট করা
-export const getAllProducts = async () => {
+export const getAllProducts = async (page = 1, limit = 6) => {
   try {
-    const response = await axiosInstance.get("/products");
+    const response = await axiosInstance.get(`/products?page=${page}&limit=${limit}`);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
   }
 };
-
 // ২. নতুন প্রোডাক্ট তৈরি করা (POST)
 // export const createProduct = async (formData) => {
 //     try {

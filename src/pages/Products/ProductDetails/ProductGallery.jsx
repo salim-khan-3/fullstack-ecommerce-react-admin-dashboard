@@ -12,7 +12,7 @@ const ProductGallery = ({ product }) => {
 
   if (!images.length) {
     return (
-      <div className="flex items-center justify-center h-64 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200">
+      <div className="flex items-center justify-center h-[460px] rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200">
         <div className="text-center">
           <div className="text-4xl mb-2">🖼️</div>
           <p className="text-gray-400 text-sm font-medium">No Image Available</p>
@@ -23,23 +23,35 @@ const ProductGallery = ({ product }) => {
 
   return (
     <div className="flex flex-col gap-4">
-
       {/* Main Image */}
-      <div className="relative border border-gray-100 rounded-3xl overflow-hidden bg-gradient-to-br from-gray-50 to-white shadow-md hover:shadow-xl transition-all duration-300">
+      <div className="relative border border-gray-100 rounded-3xl overflow-hidden bg-gradient-to-br from-gray-50 to-white shadow-md hover:shadow-xl transition-all duration-300"
+        style={{ height: "460px" }}
+      >
         {/* Badge */}
         <div className="absolute top-3 left-3 z-10 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow">
           Zoom
         </div>
 
-        <div className="w-full h-[300px] sm:h-[380px] md:h-[460px] flex items-center justify-center p-6">
-          <InnerImageZoom
-            src={mainImg}
-            zoomSrc={mainImg}
-            zoomType="hover"
-            zoomScale={1.2}
-            className="rounded-2xl max-h-full object-contain"
-          />
-        </div>
+        {mainImg && (
+          <div className="w-full h-full">
+            <InnerImageZoom
+              src={mainImg}
+              zoomSrc={mainImg}
+              zoomType="hover"
+              zoomScale={1.5}
+              zoomPreload={true}
+              className="w-full h-full"
+              imgAttributes={{
+                style: {
+                  width: "100%",
+                  height: "460px",
+                  objectFit: "cover",
+                  display: "block",
+                },
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Thumbnails */}
@@ -54,7 +66,11 @@ const ProductGallery = ({ product }) => {
                 : "border-gray-100 hover:border-blue-300 hover:scale-105 hover:shadow-sm"
               }`}
           >
-            <img src={img} alt={`Thumbnail-${idx}`} className="w-full h-full object-cover" />
+            <img
+              src={img}
+              alt={`Thumbnail-${idx}`}
+              className="w-full h-full object-cover"
+            />
             {mainImg === img && (
               <div className="absolute inset-0 bg-blue-600/10 rounded-2xl" />
             )}

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { getAllCategories } from "../../../api/categoryApi";
+import { getAllSubCategories } from "../../../api/subCategoryApi";
 import { updateProduct, getProductById } from "../../../api/productApi";
 
 const ProductUpdate = () => {
@@ -14,6 +15,7 @@ const ProductUpdate = () => {
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -26,22 +28,23 @@ const ProductUpdate = () => {
 
   const currentRating = watch("rating");
 
-  // Categories + Product data একসাথে লোড
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [catRes, product] = await Promise.all([
+        const [catRes, subCatRes, product] = await Promise.all([
           getAllCategories(1, 100),
+          getAllSubCategories(),
           getProductById(id),
         ]);
 
         setCategories(catRes?.categoryList || catRes?.data || []);
+        setSubCategories(subCatRes || []);
 
-        // Form pre-fill
         reset({
           name: product.name || "",
           description: product.description || "",
           category: product.category?._id || product.category || "",
+          subCat: product.subCat?._id || product.subCat || "",
           brand: product.brand || "",
           price: product.price || "",
           countInStock: product.countInStock || "",
@@ -122,7 +125,6 @@ const ProductUpdate = () => {
     }
   };
 
-  // Loading state
   if (fetching) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -138,7 +140,7 @@ const ProductUpdate = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 font-sans">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 font-sans">
       <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-6">
 
         {/* Breadcrumb */}
@@ -152,7 +154,7 @@ const ProductUpdate = () => {
               <p className="text-xs text-gray-400">Edit and save product changes</p>
             </div>
           </div>
-          <nav className="flex items-center gap-1.5 text-xs">
+          <nav className="flex flex-wrap gap-1.5 text-xs">
             <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all text-gray-500">
               <Home size={12} /><span>Dashboard</span>
             </div>
@@ -196,12 +198,24 @@ const ProductUpdate = () => {
                   />
                 </div>
 
+                {/* Category */}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Layers size={11} /> Category</label>
                   <select {...register("category", { required: true })} className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-600">
                     <option value="">Select Category</option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat._id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Sub Category */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Layers size={11} /> Sub Category</label>
+                  <select {...register("subCat")} className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 outline-none focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-600">
+                    <option value="">Select Sub Category</option>
+                    {subCategories.map((sub) => (
+                      <option key={sub._id} value={sub._id}>{sub.subCat}</option>
                     ))}
                   </select>
                 </div>
@@ -235,7 +249,6 @@ const ProductUpdate = () => {
               <div className="p-6">
                 <p className="text-xs text-gray-400 mb-4 font-medium">Existing images shown below. Remove or add new ones.</p>
                 <div className="flex flex-wrap gap-3">
-
                   {existingImages.map((url, index) => (
                     <div key={`existing-${index}`} className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-emerald-200 shadow-sm group">
                       <img src={url} alt="existing" className="w-full h-full object-cover" />

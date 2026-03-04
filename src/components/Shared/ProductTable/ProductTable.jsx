@@ -10,6 +10,8 @@ const {productDeleteFunc} = useProducts()
     "UID",
     "PRODUCT",
     "CATEGORY",
+    "Sub Category",
+
     "BRAND",
     "PRICE",
     "STOCK",
