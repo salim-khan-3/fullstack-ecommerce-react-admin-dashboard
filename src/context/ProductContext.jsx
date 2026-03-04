@@ -25,8 +25,8 @@ export const ProductProvider = ({ children }) => {
    const productDeleteFunc = async (id) => {
     setLoading(true);
     try {
-      await deleteProduct(id); // database থেকে delete
-      setProducts((prev) => prev.filter((p) => p._id !== id)); // UI থেকে remove
+      await deleteProduct(id); 
+      setProducts((prev) => prev.filter((p) => p._id !== id)); 
     } catch (err) {
       console.error("Error deleting product:", err);
       alert("Failed to delete product: " + (err.message || err));
@@ -35,9 +35,6 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, []);
 
   return (
     <ProductContext.Provider value={{ products,setLoading,loading ,fetchProducts,productDeleteFunc,setProducts}}>

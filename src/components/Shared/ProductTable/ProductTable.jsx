@@ -24,7 +24,7 @@ const {productDeleteFunc} = useProducts()
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-blue-600 text-white uppercase text-[11px] font-bold tracking-wider">
+            <tr className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white uppercase text-[11px] font-bold tracking-wider">
               <th className="py-4 px-4 text-center">
                 <input
                   type="checkbox"

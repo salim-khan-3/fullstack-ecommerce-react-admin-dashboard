@@ -10,12 +10,23 @@ const TableRow = ({ product }) => {
 
   console.log(product);
 
-  const categoryName =
-    typeof product.category === "object"
-      ? product.category.name
-      : product.category;
-  const brandName =
-    typeof product.brand === "object" ? product.brand.name : product.brand;
+  // এইভাবে করো
+const categoryName =
+  product.category && typeof product.category === "object"
+    ? product.category.name
+    : product.category || "N/A";
+
+const brandName =
+  product.brand && typeof product.brand === "object"
+    ? product.brand.name
+    : product.brand || "N/A";
+
+  // const categoryName =
+  //   typeof product.category === "object"
+  //     ? product.category.name
+  //     : product.category;
+  // const brandName =
+  //   typeof product.brand === "object" ? product.brand.name : product.brand;
 
   const productImage =
     Array.isArray(product.images) && product.images.length > 0
@@ -127,14 +138,14 @@ const TableRow = ({ product }) => {
 
       <td className="py-4 px-4 text-right">
         <div className="flex items-center space-x-2">
-          <Link to={`/product/details/${product._id}`}>
-            <button className="p-1.5 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors">
+          <Link to={`/product/details/${product._id}`} className="">
+            <button className="p-1.5 bg-purple-50 cursor-pointer text-purple-600 rounded-lg hover:bg-purple-100 transition-colors">
               <Eye size={16} />
             </button>
           </Link>
 
-          <Link to={`/product/update/${product._id}`}>
-            <button className="p-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100">
+          <Link to={`/product/update/${product._id}`} className="cursor-pointer">
+            <button className="p-1.5 cursor-pointer bg-green-50 text-green-600 rounded-lg hover:bg-green-100">
               <Edit2 size={16} />
             </button>
           </Link>
@@ -142,7 +153,7 @@ const TableRow = ({ product }) => {
           {/* Trigger handleDelete when clicking Trash icon */}
           <button
             onClick={() => handleDelete(product._id)}
-            className="p-1.5 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-all active:scale-90"
+            className="p-1.5 cursor-pointer bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-all active:scale-90"
           >
             <Trash2 size={16} />
           </button>

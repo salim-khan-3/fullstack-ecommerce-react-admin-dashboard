@@ -16,6 +16,8 @@ import EditCategory from "./pages/Category/Editcategory/Editcategory";
 import ProductList from "./pages/Products/ProductList/ProductList";
 import { ProductProvider } from "./context/ProductContext";
 import ProductUpdate from "./pages/Products/ProductUpdate/ProductUpdate";
+import SubCategoryList from "./pages/Category/SubCategory/SubCategoryList";
+import EditSubCategory from "./pages/Category/SubCategory/EditSubCategory";
 
 export const MyContext = createContext();
 
@@ -103,6 +105,8 @@ function App() {
                     path="/dashboard/categories/edit/:id"
                     element={<EditCategory />}
                   />
+                  <Route path="category/subcategorylist" element={<SubCategoryList></SubCategoryList>}/>
+                  <Route path="/category/subCategory/edit/:id" element={<EditSubCategory/>}/>
                 </Routes>
               </main>
             </div>
