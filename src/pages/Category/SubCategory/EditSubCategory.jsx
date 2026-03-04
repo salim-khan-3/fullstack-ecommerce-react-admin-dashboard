@@ -2,8 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 // import { getSubCategoryById, updateSubCategory } from "../api/subCategoryApi";
 
-import { getSubCategoryById, updateSubCategory } from "../../../api/subCategoryApi";
+import {
+  getSubCategoryById,
+  updateSubCategory,
+} from "../../../api/subCategoryApi";
 import { getAllCategories } from "../../../api/categoryApi";
+import Loader from "../../../components/Loader/Loader";
+import Swal from "sweetalert2";
 
 export default function EditSubCategory() {
   const { id } = useParams();
@@ -22,11 +27,12 @@ export default function EditSubCategory() {
         setLoading(true);
         const [subCatRes, catRes] = await Promise.all([
           getSubCategoryById(id),
-          getAllCategories(),
+          getAllCategories(1, 1000),
         ]);
 
         setForm({
-          category: subCatRes.data?.category?._id || subCatRes.data?.category || "",
+          category:
+            subCatRes.data?.category?._id || subCatRes.data?.category || "",
           subCat: subCatRes.data?.subCat || "",
         });
 
@@ -41,21 +47,53 @@ export default function EditSubCategory() {
     fetchData();
   }, [id]);
 
-  const handleSave = async () => {
-    if (!form.category || !form.subCat) return alert("All fields are required.");
-    try {
-      setSaving(true);
-      await updateSubCategory(id, form);
-      navigate("/subCategory");
-    } catch (err) {
-      alert("Failed to update sub category.");
-    } finally {
-      setSaving(false);
-    }
-  };
+const handleSave = async () => {
+  if (!form.category || !form.subCat)
+    return Swal.fire({
+      icon: "warning",
+      title: "All fields are required!",
+      confirmButtonColor: "#2563eb",
+    });
 
-  if (loading) return <div className="min-h-screen bg-gray-100 flex items-center justify-center text-gray-400">Loading...</div>;
-  if (error) return <div className="min-h-screen bg-gray-100 flex items-center justify-center text-red-400">{error}</div>;
+  try {
+    setSaving(true);
+
+    await updateSubCategory(id, form);
+
+    // ✅ Success Toast
+    await Swal.fire({
+      icon: "success",
+      title: "Sub Category Updated Successfully!",
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+    });
+
+    // ✅ Redirect after toast
+    navigate("/category/subcategorylist");
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Failed to update sub category.",
+      confirmButtonColor: "#dc2626",
+    });
+  } finally {
+    setSaving(false);
+  }
+};
+
+  if (loading)
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center text-gray-400">
+        <Loader></Loader>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center text-red-400">
+        {error}
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 font-sans">
@@ -79,10 +117,11 @@ export default function EditSubCategory() {
       {/* Form */}
       <div className="bg-white rounded-2xl shadow-sm p-6 max-w-lg">
         <div className="flex flex-col gap-5">
-
           {/* Category Dropdown */}
           <div>
-            <label className="text-sm font-medium text-gray-600 mb-1 block">Category</label>
+            <label className="text-sm font-medium text-gray-600 mb-1 block">
+              Category
+            </label>
             <select
               className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
               value={form.category}
@@ -99,7 +138,9 @@ export default function EditSubCategory() {
 
           {/* SubCategory Input */}
           <div>
-            <label className="text-sm font-medium text-gray-600 mb-1 block">Sub Category</label>
+            <label className="text-sm font-medium text-gray-600 mb-1 block">
+              Sub Category
+            </label>
             <input
               type="text"
               className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -112,7 +153,7 @@ export default function EditSubCategory() {
           {/* Buttons */}
           <div className="flex gap-3 mt-2">
             <button
-              onClick={() => navigate("/subCategory")}
+              onClick={() => navigate("/category/subcategorylist")}
               className="px-6 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition"
             >
               Cancel
@@ -125,7 +166,6 @@ export default function EditSubCategory() {
               {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
-
         </div>
       </div>
     </div>

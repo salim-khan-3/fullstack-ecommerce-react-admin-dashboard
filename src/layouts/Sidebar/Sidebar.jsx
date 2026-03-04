@@ -30,6 +30,8 @@ const Sidebar = () => {
       submenu: [
         { label: "Category List", path: "/category/list" },
         { label: "Add Category", path: "/category/add" },
+        { label: "Sub Category List", path: "/category/subcategorylist" },
+        { label: "Add Sub Category", path: "/subCategory/add" },
       ],
     },
     {

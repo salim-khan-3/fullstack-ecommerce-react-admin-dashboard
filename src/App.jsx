@@ -18,6 +18,7 @@ import { ProductProvider } from "./context/ProductContext";
 import ProductUpdate from "./pages/Products/ProductUpdate/ProductUpdate";
 import SubCategoryList from "./pages/Category/SubCategory/SubCategoryList";
 import EditSubCategory from "./pages/Category/SubCategory/EditSubCategory";
+import AddSubCategory from "./pages/Category/SubCategory/AddSubCategory";
 
 export const MyContext = createContext();
 
@@ -105,7 +106,8 @@ function App() {
                     path="/dashboard/categories/edit/:id"
                     element={<EditCategory />}
                   />
-                  <Route path="category/subcategorylist" element={<SubCategoryList></SubCategoryList>}/>
+                  <Route path="/subCategory/add" element={<AddSubCategory />} />
+                  <Route path="/category/subcategorylist" element={<SubCategoryList></SubCategoryList>}/>
                   <Route path="/category/subCategory/edit/:id" element={<EditSubCategory/>}/>
                 </Routes>
               </main>
