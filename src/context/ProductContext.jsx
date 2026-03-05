@@ -1,19 +1,36 @@
 import { createContext, useEffect, useState } from "react";
-import { deleteProduct, getAllProducts, getProductsByCategory } from "../api/productApi";
+import {
+  deleteProduct,
+  getAllProducts,
+  getProductsByCategory,
+} from "../api/productApi";
 
 export const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const fetchProducts = async (categoryId = "") => {
+  const fetchProducts = async (categoryId = "", page = 1) => {
     setLoading(true);
     try {
       const data = categoryId
         ? await getProductsByCategory(categoryId)
-        : await getAllProducts();
-      setProducts(data.data || data);
+        : await getAllProducts(page, 6);
+
+      if (categoryId) {
+        setProducts(Array.isArray(data.data) ? data.data : []);
+        setTotalPages(1);
+        setTotalItems(data.count || 0);
+      } else {
+        setProducts(data.products || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalItems(data.totalItems || 0);
+        setCurrentPage(data.currentPage || 1);
+      }
     } catch (err) {
       console.error("Products fetch error:", err);
     } finally {
@@ -21,12 +38,11 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-
-   const productDeleteFunc = async (id) => {
+  const productDeleteFunc = async (id) => {
     setLoading(true);
     try {
-      await deleteProduct(id); 
-      setProducts((prev) => prev.filter((p) => p._id !== id)); 
+      await deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
       console.error("Error deleting product:", err);
       alert("Failed to delete product: " + (err.message || err));
@@ -35,9 +51,21 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-
   return (
-    <ProductContext.Provider value={{ products,setLoading,loading ,fetchProducts,productDeleteFunc,setProducts}}>
+    <ProductContext.Provider
+      value={{
+        products,
+        setLoading,
+        loading,
+        fetchProducts,
+        productDeleteFunc,
+        setProducts,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        totalItems,
+      }}
+    >
       {children}
     </ProductContext.Provider>
   );
