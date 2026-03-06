@@ -19,6 +19,15 @@ import ProductUpdate from "./pages/Products/ProductUpdate/ProductUpdate";
 import SubCategoryList from "./pages/Category/SubCategory/SubCategoryList";
 import EditSubCategory from "./pages/Category/SubCategory/EditSubCategory";
 import AddSubCategory from "./pages/Category/SubCategory/AddSubCategory";
+import EditProductWeight from "./pages/Products/productweight/Editproductweight";
+import ProductWeightList from "./pages/Products/productweight/Productweightlist";
+import AddProductWeight from "./pages/Products/productweight/Addproductweight";
+import EditProductSize from "./pages/Products/productsize/Editproductsize";
+import ProductSizeList from "./pages/Products/productsize/Productsizelist";
+import AddProductSize from "./pages/Products/productsize/Addproductsize";
+import EditProductRams from "./pages/Products/productrams/Editproductrams";
+import ProductRamsList from "./pages/Products/productrams/Productramslist";
+import AddProductRams from "./pages/Products/productrams/Addproductrams";
 
 export const MyContext = createContext();
 
@@ -99,7 +108,10 @@ function App() {
                     element={<ProductDetails />}
                   />
                   <Route path="/product/upload" element={<ProductUpload />} />
-                  <Route path="/product/update/:id" element={<ProductUpdate />} />
+                  <Route
+                    path="/product/update/:id"
+                    element={<ProductUpdate />}
+                  />
                   <Route path="/category/add" element={<CategoryForm />} />
                   <Route path="/category/list" element={<CategoryList />} />
                   <Route
@@ -107,8 +119,46 @@ function App() {
                     element={<EditCategory />}
                   />
                   <Route path="/subCategory/add" element={<AddSubCategory />} />
-                  <Route path="/category/subcategorylist" element={<SubCategoryList></SubCategoryList>}/>
-                  <Route path="/category/subCategory/edit/:id" element={<EditSubCategory/>}/>
+                  <Route
+                    path="/category/subcategorylist"
+                    element={<SubCategoryList></SubCategoryList>}
+                  />
+                  <Route
+                    path="/category/subCategory/edit/:id"
+                    element={<EditSubCategory />}
+                  />
+                  <Route path="/productrams/add" element={<AddProductRams />} />
+                  <Route
+                    path="/productrams/list"
+                    element={<ProductRamsList />}
+                  />
+                  <Route
+                    path="/productrams/edit/:id"
+                    element={<EditProductRams />}
+                  />
+                  // ProductSize
+                  <Route path="/productsize/add" element={<AddProductSize />} />
+                  <Route
+                    path="/productsize/list"
+                    element={<ProductSizeList />}
+                  />
+                  <Route
+                    path="/productsize/edit/:id"
+                    element={<EditProductSize />}
+                  />
+                  // ProductWeight
+                  <Route
+                    path="/productweight/add"
+                    element={<AddProductWeight />}
+                  />
+                  <Route
+                    path="/productweight/list"
+                    element={<ProductWeightList />}
+                  />
+                  <Route
+                    path="/productweight/edit/:id"
+                    element={<EditProductWeight />}
+                  />
                 </Routes>
               </main>
             </div>

@@ -23,6 +23,12 @@ const Sidebar = () => {
       submenu: [
         { label: "Product List", path: "/products/list" },
         { label: "Product Upload", path: "/product/upload" },
+        { label: "Add Product RAMS", path: "/productrams/add" },
+        { label: "Product RAMS", path: "/productrams/list" },
+        { label: "Add Product WEIGHT", path: "/productweight/add" },
+        { label: "Product WEIGHT", path: "/productweight/list" },
+        { label: "Add Product SIZE", path: "/productsize/add" },
+        { label: "Product SIZE", path: "/productsize/list" },
       ],
     },
     {
