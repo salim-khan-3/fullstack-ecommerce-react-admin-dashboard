@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { signinUser, signupUser } from "../api/useApi";
+// import { signinUser, signupUser } from "../api/userApi";
 
 export const AuthContext = createContext();
 
@@ -14,34 +15,27 @@ export const AuthProvider = ({ children }) => {
 
   const isLoggedIn = !!token;
 
+  // ==========================
+  // SIGN IN
+  // ==========================
   const signin = async (email, password) => {
-    const res = await axios.post("http://localhost:4000/api/user/signin", {
-      email,
-      password,
-    });
+    const data = await signinUser(email, password);
 
-    const { token, user } = res.data;
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    setToken(data.token);
+    setUser(data.user);
 
-    setToken(token);
-    setUser(user);
-
-    return res.data;
+    return data;
   };
 
   // ==========================
   // SIGN UP
   // ==========================
   const signup = async (name, email, phone, password) => {
-    const res = await axios.post("http://localhost:4000/api/user/signup", {
-      name,
-      email,
-      phone,
-      password,
-    });
-    return res.data;
+    const data = await signupUser(name, email, phone, password);
+    return data;
   };
 
   // ==========================
@@ -62,5 +56,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook
 export const useAuth = () => useContext(AuthContext);

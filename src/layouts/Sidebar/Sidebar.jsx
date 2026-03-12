@@ -7,13 +7,13 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { MyContext } from "../../App";
+import { path } from "framer-motion/client";
 
 const Sidebar = () => {
   const location = useLocation();
   const { isToggleSidebar, setIsToggleSidebar } = useContext(MyContext);
 
-  // ✅ isToggleSidebar = true  → sidebar OPEN
-  // ✅ isToggleSidebar = false → sidebar CLOSED
+
   const isOpen = isToggleSidebar;
 
   const menuItems = [
@@ -41,12 +41,7 @@ const Sidebar = () => {
       ],
     },
     {
-      icon: <ShoppingCart size={18} />, label: "Orders", hasArrow: true,
-      submenu: [
-        { label: "Pending Orders", path: "/orders/pending" },
-        { label: "Completed", path: "/orders/completed" },
-      ],
-    },
+      icon: <ShoppingCart size={18} />, label: "Orders", hasArrow: true,path:"/orders"},
     { icon: <TrendingUp size={18} />, label: "Analytics", path: "/analytics" },
   ];
 
