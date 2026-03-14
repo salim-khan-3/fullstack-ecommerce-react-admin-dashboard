@@ -2,8 +2,16 @@
 import React, { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, ShoppingBag, ShoppingCart, LogIn,
-  UserPlus, LogOut, ChevronRight, Tag, TrendingUp, X
+  LayoutDashboard,
+  ShoppingBag,
+  ShoppingCart,
+  LogIn,
+  UserPlus,
+  LogOut,
+  ChevronRight,
+  Tag,
+  TrendingUp,
+  X,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { MyContext } from "../../App";
@@ -13,13 +21,20 @@ const Sidebar = () => {
   const location = useLocation();
   const { isToggleSidebar, setIsToggleSidebar } = useContext(MyContext);
 
-
   const isOpen = isToggleSidebar;
 
   const menuItems = [
     { icon: <LayoutDashboard size={18} />, label: "Dashboard", path: "/" },
     {
-      icon: <ShoppingBag size={18} />, label: "Products", hasArrow: true,
+      icon: <ShoppingCart size={18} />,
+      label: "Home Banner Slides",
+      hasArrow: true,
+      path: "/homebanner",
+    },
+    {
+      icon: <ShoppingBag size={18} />,
+      label: "Products",
+      hasArrow: true,
       submenu: [
         { label: "Product List", path: "/products/list" },
         { label: "Product Upload", path: "/product/upload" },
@@ -32,7 +47,9 @@ const Sidebar = () => {
       ],
     },
     {
-      icon: <Tag size={18} />, label: "Category", hasArrow: true,
+      icon: <Tag size={18} />,
+      label: "Category",
+      hasArrow: true,
       submenu: [
         { label: "Category List", path: "/category/list" },
         { label: "Add Category", path: "/category/add" },
@@ -41,20 +58,28 @@ const Sidebar = () => {
       ],
     },
     {
-      icon: <ShoppingCart size={18} />, label: "Orders", hasArrow: true,path:"/orders"},
+      icon: <ShoppingCart size={18} />,
+      label: "Orders",
+      hasArrow: true,
+      path: "/orders",
+    },
     { icon: <TrendingUp size={18} />, label: "Analytics", path: "/analytics" },
   ];
 
   const authItems = [
     {
-      icon: <LogIn size={18} />, label: "Login", hasArrow: true,
+      icon: <LogIn size={18} />,
+      label: "Login",
+      hasArrow: true,
       submenu: [
         { label: "Admin Login", path: "/login/admin" },
         { label: "User Login", path: "/login/user" },
       ],
     },
     {
-      icon: <UserPlus size={18} />, label: "Sign Up", hasArrow: true,
+      icon: <UserPlus size={18} />,
+      label: "Sign Up",
+      hasArrow: true,
       submenu: [{ label: "Register", path: "/signup" }],
     },
   ];
@@ -86,7 +111,6 @@ const Sidebar = () => {
       >
         {/* Inner wrapper — fixed width যাতে animate করলেও content squish না হয় */}
         <div className="w-64 h-full flex flex-col">
-
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
             <div className="flex items-center gap-2">
@@ -125,7 +149,11 @@ const Sidebar = () => {
                 Authentication
               </p>
               {authItems.map((item, index) => (
-                <SidebarItem key={index} {...item} currentPath={location.pathname} />
+                <SidebarItem
+                  key={index}
+                  {...item}
+                  currentPath={location.pathname}
+                />
               ))}
             </div>
           </div>
@@ -140,8 +168,12 @@ const Sidebar = () => {
                   className="w-9 h-9 rounded-xl object-cover border-2 border-white shadow-sm flex-shrink-0"
                 />
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-gray-800 truncate">Rinku Verma</p>
-                  <p className="text-[10px] text-gray-400 truncate">@Rinkuv37 · Admin</p>
+                  <p className="text-xs font-bold text-gray-800 truncate">
+                    Rinku Verma
+                  </p>
+                  <p className="text-[10px] text-gray-400 truncate">
+                    @Rinkuv37 · Admin
+                  </p>
                 </div>
               </div>
               <button className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-200/50 active:scale-95 whitespace-nowrap">
@@ -149,7 +181,6 @@ const Sidebar = () => {
               </button>
             </div>
           </div>
-
         </div>
       </motion.aside>
     </>
@@ -157,12 +188,22 @@ const Sidebar = () => {
 };
 
 // ── SidebarItem ──
-const SidebarItem = ({ icon, label, hasArrow, submenu, path, active, currentPath }) => {
+const SidebarItem = ({
+  icon,
+  label,
+  hasArrow,
+  submenu,
+  path,
+  active,
+  currentPath,
+}) => {
   const hasSubmenu = submenu && submenu.length > 0;
-  const isSubmenuActive = hasSubmenu && submenu.some((s) => s.path === currentPath);
+  const isSubmenuActive =
+    hasSubmenu && submenu.some((s) => s.path === currentPath);
   const [isOpen, setIsOpen] = useState(isSubmenuActive);
 
-  const base = "group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left whitespace-nowrap";
+  const base =
+    "group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 w-full text-left whitespace-nowrap";
   const activeClass = "bg-blue-600 text-white shadow-md shadow-blue-200";
   const inactiveClass = "text-gray-600 hover:bg-gray-100 hover:text-blue-600";
   const openClass = "bg-blue-50 text-blue-600";
@@ -170,16 +211,25 @@ const SidebarItem = ({ icon, label, hasArrow, submenu, path, active, currentPath
   const content = (
     <>
       <div className="flex items-center gap-3">
-        <span className={`transition-colors flex-shrink-0 ${active ? "text-white" : isOpen ? "text-blue-600" : "text-gray-400 group-hover:text-blue-600"}`}>
+        <span
+          className={`transition-colors flex-shrink-0 ${active ? "text-white" : isOpen ? "text-blue-600" : "text-gray-400 group-hover:text-blue-600"}`}
+        >
           {icon}
         </span>
         <span className="text-sm font-semibold">{label}</span>
       </div>
       {hasArrow && (
-        <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
+        <motion.div
+          animate={{ rotate: isOpen ? 90 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <ChevronRight
             size={14}
-            className={active ? "text-white/70" : "text-gray-400 group-hover:text-blue-600"}
+            className={
+              active
+                ? "text-white/70"
+                : "text-gray-400 group-hover:text-blue-600"
+            }
           />
         </motion.div>
       )}
@@ -196,7 +246,10 @@ const SidebarItem = ({ icon, label, hasArrow, submenu, path, active, currentPath
           {content}
         </div>
       ) : (
-        <Link to={path} className={`${base} ${active ? activeClass : inactiveClass}`}>
+        <Link
+          to={path}
+          className={`${base} ${active ? activeClass : inactiveClass}`}
+        >
           {content}
         </Link>
       )}
@@ -220,7 +273,9 @@ const SidebarItem = ({ icon, label, hasArrow, submenu, path, active, currentPath
                     : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/50"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${currentPath === subItem.path ? "bg-blue-600" : "bg-gray-300"}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${currentPath === subItem.path ? "bg-blue-600" : "bg-gray-300"}`}
+                />
                 {subItem.label}
               </Link>
             ))}

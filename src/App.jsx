@@ -31,6 +31,8 @@ import AddProductRams from "./pages/Products/productrams/Addproductrams";
 import { AuthProvider } from "./context/AuthContext";
 import Orders from "./pages/Orders/Orders";
 import HomeBanners from "./pages/HomeBanners/HomeBanners";
+import AddHomeSlide from "./pages/HomeBanners/Bannerupload ";
+import SlideList from "./pages/HomeBanners/Bannerlist ";
 
 export const MyContext = createContext();
 
