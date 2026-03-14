@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 const ROWS_OPTIONS = [5, 10, 20];
 
-export default function AdminOrders() {
+export default function Orders() {
   const { token } = useAuth();
 
   const [orders, setOrders]           = useState([]);
@@ -17,22 +17,37 @@ export default function AdminOrders() {
   const [page, setPage]               = useState(1);
   const [rowsDropdown, setRowsDropdown] = useState(false);
   const [updatingId, setUpdatingId]   = useState(null);
-
-  useEffect(() => {
+// console.log(orders);
+useEffect(() => {
+  if (token) {
     fetchOrders();
-  }, []);
+  }
+}, [token]); // token যখনই আসবে তখন fetch হবে
 
-  const fetchOrders = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllOrdersApi(token);
-      setOrders(data.orders || []);
-    } catch {
-      toast.error("Failed to load orders");
-    } finally {
-      setLoading(false);
+const fetchOrders = async () => {
+  if (!token) return;
+
+  setLoading(true);
+  try {
+    const data = await getAllOrdersApi(token);
+    console.log("API Data:", data); // এখানে চেক করলে দেখবে সরাসরি অ্যারে আসছে
+
+    // ফিক্স: যদি data সরাসরি অ্যারে হয় তবে সেটা সেট করো, নতুবা data.orders চেক করো
+    if (Array.isArray(data)) {
+      setOrders(data);
+    } else if (data && data.orders) {
+      setOrders(data.orders);
+    } else {
+      setOrders([]);
     }
-  };
+    
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    toast.error("Failed to load orders");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleStatusChange = async (orderId, newStatus) => {
     setUpdatingId(orderId);

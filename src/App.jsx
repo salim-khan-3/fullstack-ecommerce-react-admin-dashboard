@@ -30,6 +30,7 @@ import ProductRamsList from "./pages/Products/productrams/Productramslist";
 import AddProductRams from "./pages/Products/productrams/Addproductrams";
 import { AuthProvider } from "./context/AuthContext";
 import Orders from "./pages/Orders/Orders";
+import HomeBanners from "./pages/HomeBanners/HomeBanners";
 
 export const MyContext = createContext();
 
@@ -116,6 +117,7 @@ function App() {
                     <Route path="/productweight/list" element={<ProductWeightList />} />
                     <Route path="/productweight/edit/:id" element={<EditProductWeight />} />
                     <Route path="orders" element={<Orders />} />
+                    <Route path="homebanner" element={<HomeBanners />} />
                   </Routes>
                 </main>
               </div>
