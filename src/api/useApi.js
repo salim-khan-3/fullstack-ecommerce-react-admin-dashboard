@@ -72,3 +72,17 @@ export const getUserCount = async (token) => {
   });
   return res.data;
 };
+
+
+// ==========================
+// UPLOAD PROFILE IMAGE
+// ==========================
+export const uploadProfileImage = async (id, formData, token) => {
+  const res = await axios.put(`${BASE_URL}/${id}/image`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
