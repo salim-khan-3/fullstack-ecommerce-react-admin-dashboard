@@ -33,6 +33,7 @@ import Orders from "./pages/Orders/Orders";
 import HomeBanners from "./pages/HomeBanners/HomeBanners";
 import AddHomeSlide from "./pages/HomeBanners/Bannerupload ";
 import SlideList from "./pages/HomeBanners/Bannerlist ";
+import Profile from "./pages/Profile/Profile";
 
 export const MyContext = createContext();
 
@@ -120,6 +121,7 @@ function App() {
                     <Route path="/productweight/edit/:id" element={<EditProductWeight />} />
                     <Route path="orders" element={<Orders />} />
                     <Route path="homebanner" element={<HomeBanners />} />
+                    <Route path="profile" element={<Profile />} />
                   </Routes>
                 </main>
               </div>

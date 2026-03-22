@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import { MyContext } from "../../App";
 import { useAuth } from "../../context/Authcontext";
 import { updateUser, uploadProfileImage } from "../../api/useApi";
@@ -32,7 +32,7 @@ const Profile = () => {
   }, [user, setValue]);
 
   // Profile Info Update
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
     setLoading(true);
     try {
       const updateData = {
@@ -50,10 +50,15 @@ const Profile = () => {
         updateData.password = data.password;
       }
 
-      const res = await updateUser(user.id, updateData, token);
+      // ✅ Fix: id বা _id যেটা আছে সেটা use করো
+      const userId = user?.id || user?._id;
+      console.log("User ID:", userId); // debug করো
+
+      const res = await updateUser(userId, updateData, token);
       updateUserContext(res.user);
       toast.success("Profile updated successfully!");
     } catch (error) {
+      console.error("Update error:", error.response?.data);
       toast.error(error.response?.data?.message || "Update failed");
     } finally {
       setLoading(false);
@@ -61,21 +66,22 @@ const Profile = () => {
   };
 
   // Image Upload
-  const handleImageChange = async (e) => {
+const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Preview
     const reader = new FileReader();
     reader.onload = () => setPreviewImage(reader.result);
     reader.readAsDataURL(file);
 
-    // Upload
     setImageLoading(true);
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const res = await uploadProfileImage(user.id, formData, token);
+
+      // ✅ Fix
+      const userId = user?.id || user?._id;
+      const res = await uploadProfileImage(userId, formData, token);
       updateUserContext(res.user);
       toast.success("Profile image updated!");
     } catch (error) {
@@ -84,7 +90,6 @@ const Profile = () => {
       setImageLoading(false);
     }
   };
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
 
