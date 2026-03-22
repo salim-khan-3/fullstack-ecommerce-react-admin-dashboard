@@ -1,17 +1,10 @@
-import axios from "axios";
-
-const BASE_URL = "http://localhost:4000/api/user";
+import axiosInstance from "./axiosInstance";
 
 // ==========================
 // SIGN UP
 // ==========================
 export const signupUser = async (name, email, phone, password) => {
-  const res = await axios.post(`${BASE_URL}/signup`, {
-    name,
-    email,
-    phone,
-    password,
-  });
+  const res = await axiosInstance.post("/user/signup", { name, email, phone, password });
   return res.data;
 };
 
@@ -19,7 +12,7 @@ export const signupUser = async (name, email, phone, password) => {
 // SIGN IN
 // ==========================
 export const signinUser = async (email, password) => {
-  const res = await axios.post(`${BASE_URL}/signin`, { email, password });
+  const res = await axiosInstance.post("/user/signin", { email, password });
   return res.data;
 };
 
@@ -27,7 +20,7 @@ export const signinUser = async (email, password) => {
 // GET ALL USERS
 // ==========================
 export const getAllUsers = async (token) => {
-  const res = await axios.get(BASE_URL, {
+  const res = await axiosInstance.get("/user", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -37,7 +30,7 @@ export const getAllUsers = async (token) => {
 // GET USER BY ID
 // ==========================
 export const getUserById = async (id, token) => {
-  const res = await axios.get(`${BASE_URL}/${id}`, {
+  const res = await axiosInstance.get(`/user/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -47,7 +40,7 @@ export const getUserById = async (id, token) => {
 // UPDATE USER
 // ==========================
 export const updateUser = async (id, data, token) => {
-  const res = await axios.put(`${BASE_URL}/${id}`, data, {
+  const res = await axiosInstance.put(`/user/${id}`, data, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -57,7 +50,7 @@ export const updateUser = async (id, data, token) => {
 // DELETE USER
 // ==========================
 export const deleteUser = async (id, token) => {
-  const res = await axios.delete(`${BASE_URL}/${id}`, {
+  const res = await axiosInstance.delete(`/user/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -67,18 +60,17 @@ export const deleteUser = async (id, token) => {
 // GET USER COUNT
 // ==========================
 export const getUserCount = async (token) => {
-  const res = await axios.get(`${BASE_URL}/get/count`, {
+  const res = await axiosInstance.get("/user/get/count", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
 };
 
-
 // ==========================
 // UPLOAD PROFILE IMAGE
 // ==========================
 export const uploadProfileImage = async (id, formData, token) => {
-  const res = await axios.put(`${BASE_URL}/${id}/image`, formData, {
+  const res = await axiosInstance.put(`/user/${id}/image`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
@@ -86,3 +78,138 @@ export const uploadProfileImage = async (id, formData, token) => {
   });
   return res.data;
 };
+
+// ==========================
+// GET PRODUCT COUNT
+// ==========================
+export const getProductCount = async (token) => {
+  const res = await axiosInstance.get("/products/get/count", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+// ==========================
+// GET ORDER COUNT
+// ==========================
+export const getOrderCount = async (token) => {
+  const res = await axiosInstance.get("/orders/get/count", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+// ==========================
+// GET REVIEW COUNT
+// ==========================
+export const getReviewCount = async (token) => {
+  const res = await axiosInstance.get("/reviews/get/count", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import axios from "axios";
+
+// const BASE_URL = "http://localhost:4000/api/user";
+
+// // ==========================
+// // SIGN UP
+// // ==========================
+// export const signupUser = async (name, email, phone, password) => {
+//   const res = await axios.post(`${BASE_URL}/signup`, {
+//     name,
+//     email,
+//     phone,
+//     password,
+//   });
+//   return res.data;
+// };
+
+// // ==========================
+// // SIGN IN
+// // ==========================
+// export const signinUser = async (email, password) => {
+//   const res = await axios.post(`${BASE_URL}/signin`, { email, password });
+//   return res.data;
+// };
+
+// // ==========================
+// // GET ALL USERS
+// // ==========================
+// export const getAllUsers = async (token) => {
+//   const res = await axios.get(BASE_URL, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return res.data;
+// };
+
+// // ==========================
+// // GET USER BY ID
+// // ==========================
+// export const getUserById = async (id, token) => {
+//   const res = await axios.get(`${BASE_URL}/${id}`, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return res.data;
+// };
+
+// // ==========================
+// // UPDATE USER
+// // ==========================
+// export const updateUser = async (id, data, token) => {
+//   const res = await axios.put(`${BASE_URL}/${id}`, data, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return res.data;
+// };
+
+// // ==========================
+// // DELETE USER
+// // ==========================
+// export const deleteUser = async (id, token) => {
+//   const res = await axios.delete(`${BASE_URL}/${id}`, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return res.data;
+// };
+
+// // ==========================
+// // GET USER COUNT
+// // ==========================
+// export const getUserCount = async (token) => {
+//   const res = await axios.get(`${BASE_URL}/get/count`, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return res.data;
+// };
+
+
+// // ==========================
+// // UPLOAD PROFILE IMAGE
+// // ==========================
+// export const uploadProfileImage = async (id, formData, token) => {
+//   const res = await axios.put(`${BASE_URL}/${id}/image`, formData, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+//   return res.data;
+// };
