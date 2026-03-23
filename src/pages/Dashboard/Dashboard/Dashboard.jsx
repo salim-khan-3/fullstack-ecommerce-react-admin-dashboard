@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
-import StatsCards from "../../../components/ProductComponent/StatsCards/StatsCards";
+
 import ProductTable from "../../../components/Shared/ProductTable/ProductTable";
 import TableFilters from "../../../components/Shared/TableFilters/TableFilters";
 import { useProducts } from "../../../context/hooks/useProducts";
 import PageHeader from "../PageHeader/PageHeader";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import StatsCards from "../StatsCards/StatsCards";
 
 const Dashboard = () => {
-  const { products, loading, fetchProducts, currentPage, setCurrentPage, totalPages, totalItems } = useProducts();
+  const {
+    products,
+    loading,
+    fetchProducts,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+  } = useProducts();
   const [activeCategoryId, setActiveCategoryId] = useState("");
 
   useEffect(() => {
@@ -33,9 +42,24 @@ const Dashboard = () => {
       if (currentPage <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        );
       } else {
-        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages,
+        );
       }
     }
     return pages;
@@ -55,9 +79,11 @@ const Dashboard = () => {
         {!loading && totalPages > 1 && (
           <div className="bg-white border-x border-b border-gray-100 rounded-b-2xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-gray-400 font-medium">
-              Showing page <span className="text-gray-700 font-bold">{currentPage}</span> of{" "}
+              Showing page{" "}
+              <span className="text-gray-700 font-bold">{currentPage}</span> of{" "}
               <span className="text-gray-700 font-bold">{totalPages}</span> —{" "}
-              <span className="text-gray-700 font-bold">{totalItems}</span> total products
+              <span className="text-gray-700 font-bold">{totalItems}</span>{" "}
+              total products
             </p>
             <div className="flex items-center gap-1.5">
               <button
@@ -70,7 +96,12 @@ const Dashboard = () => {
 
               {getPageNumbers().map((page, index) =>
                 page === "..." ? (
-                  <span key={`dots-${index}`} className="px-2 text-gray-400 text-sm">...</span>
+                  <span
+                    key={`dots-${index}`}
+                    className="px-2 text-gray-400 text-sm"
+                  >
+                    ...
+                  </span>
                 ) : (
                   <button
                     key={page}
@@ -83,7 +114,7 @@ const Dashboard = () => {
                   >
                     {page}
                   </button>
-                )
+                ),
               )}
 
               <button
