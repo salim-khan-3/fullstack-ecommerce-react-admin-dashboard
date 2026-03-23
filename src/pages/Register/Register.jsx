@@ -34,7 +34,7 @@ const Register = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:4000/api/user/signup", {
+      await axios.post("https://fulls-stack-ecommerce-mern-server-s.vercel.app/api/user/signup", {
         name:     data.name,
         email:    data.email,
         phone:    data.phone,
