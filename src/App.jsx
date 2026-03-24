@@ -89,17 +89,17 @@ function App() {
                       x: isMobile ? (isToggleSidebar ? 0 : -sidebarWidth) : 0,
                     }}
                     className={`
-                      bg-white border-r border-gray-100 shadow-sm
-                      ${isMobile ? "fixed left-0 top-0 h-full z-[70]" : "sticky top-0 h-screen"}
-                      overflow-hidden
-                    `}
+  bg-white border-r border-gray-100 shadow-sm
+  ${isMobile ? "fixed left-0 top-0 h-full z-[70]" : "fixed left-0 top-0 h-screen"}
+  overflow-hidden
+`}
                   >
                     <Sidebar />
                   </motion.div>
                 </>
               )}
 
-              <div className="flex-1 flex flex-col min-w-0">
+              <div className="flex-1 flex flex-col min-w-0" style={{ marginLeft: isToggleSidebar && !isMobile ? 260 : 0, transition: "margin 0.25s ease" }}>
                 <main className="p-4 md:p-6">
                   <Routes>
                     {/* Public Routes */}
